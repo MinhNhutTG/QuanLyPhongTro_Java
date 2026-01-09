@@ -1,10 +1,19 @@
-package ui;
+package ui.Home;
 
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import ui.Config.panel_config;
+import ui.Contract.panel_contract;
+import ui.Guest.panel_guest;
+import ui.Invoice.panel_invoice;
+import ui.Report.panel_report;
+import ui.Room.panel_room;
+import ui.Service.panel_service;
+
 import java.awt.BorderLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -23,8 +32,10 @@ public class home extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private String[] features =  {"Trang chủ" , "Hợp đồng", "Phòng", "Dịch vụ", "Hóa đơn", "Thống kê", "Báo cáo", "Cấu hình","Thoát"};
-
+	private String[] lable =  {"Trang chủ", "Khách thuê", "Hợp đồng", "Phòng", "Dịch vụ", "Hóa đơn", "Báo cáo", "Cấu hình","Thoát"};
+	private String[] features =  {"home", "guest", "contract", "room", "service", "invoice", "report", "config", "exit"};
+	private CardLayout cardLayout;
+	private JButton[] btnCategories;
 	/**
 	 * Launch the application.
 	 */
@@ -61,6 +72,22 @@ public class home extends JFrame {
 		
 		
 		
+		
+		JPanel main_panel = new JPanel();
+		cardLayout = new CardLayout();
+		main_panel.setLayout(cardLayout);
+		main_panel.setPreferredSize(new Dimension(10, 60));
+		contentPane.add(main_panel, BorderLayout.CENTER);
+		
+		main_panel.add(new panel_home(), "panelhome");
+		main_panel.add(new panel_guest(), "panelguest");
+		main_panel.add(new panel_contract(), "panelcontract");
+		main_panel.add(new panel_room(), "panelroom");
+		main_panel.add(new panel_service(), "panelservice");
+		main_panel.add(new panel_invoice(), "panelinvoice");
+		main_panel.add(new panel_report(), "panelreport");
+		main_panel.add(new panel_config(), "panelconfig");
+		
 		JLabel lblNewLabel_1 = new JLabel("QUẢN LÝ PHÒNG TRỌ");
 		lblNewLabel_1.setForeground(new Color(255, 255, 255));
 		lblNewLabel_1.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -70,43 +97,41 @@ public class home extends JFrame {
 		lblNewLabel_1.setPreferredSize(new Dimension(300, 300));
 		lblNewLabel_1.setMaximumSize(new Dimension(300, 300));
 		side_panel.add(lblNewLabel_1);
+		
+		btnCategories = new JButton[features.length];
 		for (int i=0 ; i< features.length -1; i++ ) {
-			JButton btnNewButton = new JButton(features[i]);
-			btnNewButton.setBorder(null);
-			btnNewButton.setBackground(new Color(255, 255, 255));
-			btnNewButton.setFont(new Font("Dialog", Font.BOLD, 18));
-			btnNewButton.setForeground(new Color(39, 83, 138));
-			btnNewButton.addActionListener(new ActionListener() {
+			final int index = i;
+			btnCategories[i] = new JButton(lable[i]);
+			btnCategories[i].setBorder(null);
+			btnCategories[i].setBackground(new Color(255, 255, 255));
+			btnCategories[i].setFont(new Font("Dialog", Font.BOLD, 18));
+			btnCategories[i].setForeground(new Color(39, 83, 138));
+			btnCategories[i].addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					cardLayout.show(main_panel, "panel" + features[index]);
 				}
 			});
-			btnNewButton.setMinimumSize(new Dimension(105, 20));
-			btnNewButton.setMaximumSize(new Dimension(400, 80));
-			btnNewButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-			btnNewButton.setPreferredSize(new Dimension(30, 27));
-			side_panel.add(btnNewButton);
+			btnCategories[i].setMinimumSize(new Dimension(105, 20));
+			btnCategories[i].setMaximumSize(new Dimension(400, 80));
+			btnCategories[i].setAlignmentX(Component.CENTER_ALIGNMENT);
+			btnCategories[i].setPreferredSize(new Dimension(30, 27));
+			side_panel.add(btnCategories[i]);
 		}
 
 
-		JButton btnNewButton = new JButton(features[features.length -1]);
+		JButton btnNewButton = new JButton(lable[features.length -1]);
 		btnNewButton.setForeground(new Color(255, 255, 255));
 		btnNewButton.setBorder(null);
 		btnNewButton.setBackground(new Color(39, 83, 138));
 		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 18));
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+		
 		btnNewButton.setMinimumSize(new Dimension(105, 20));
 		btnNewButton.setMaximumSize(new Dimension(400, 80));
 		btnNewButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		btnNewButton.setPreferredSize(new Dimension(30, 27));
 		side_panel.add(btnNewButton);
 		
-		JPanel main_panel = new JPanel();
-		main_panel.setPreferredSize(new Dimension(10, 60));
-		contentPane.add(main_panel, BorderLayout.CENTER);
-		main_panel.setLayout(new CardLayout(0, 0));
+		
 
 	}
 
