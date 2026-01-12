@@ -27,6 +27,7 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.CardLayout;
+import javax.swing.border.LineBorder;
 
 public class home extends JFrame {
 
@@ -65,6 +66,7 @@ public class home extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
 		JPanel side_panel = new JPanel();
+		side_panel.setBorder(new LineBorder(new Color(0, 0, 0)));
 		side_panel.setBackground(new Color(39, 83, 138));
 		side_panel.setPreferredSize(new Dimension(300, 10));
 		contentPane.add(side_panel, BorderLayout.WEST);
