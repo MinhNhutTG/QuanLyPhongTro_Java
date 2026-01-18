@@ -1,150 +1,123 @@
 package ui.Room;
 
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.JLabel;
-import java.awt.BorderLayout;
-import javax.swing.BoxLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.Box;
-import javax.swing.UIManager;
-import javax.swing.JTable;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class panel_room extends JPanel {
 
-	private static final long serialVersionUID = 1L;
-	private JTable table;
+    private static final long serialVersionUID = 1L;
+    private JTable table;
+    private DefaultTableModel model;
 
-	/**
-	 * Create the panel.
-	 */
-	public panel_room() {
-		this.setSize(1920,1080);
-		setLayout(new BorderLayout(0, 0));
-		
-		JPanel panel = new JPanel();
-		add(panel, BorderLayout.CENTER);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		
-		JPanel panel_1 = new JPanel();
-		panel_1.setMaximumSize(new Dimension(32767, 40));
-		panel_1.setPreferredSize(new Dimension(10, 40));
-		panel_1.setBackground(new Color(39, 83, 138));
-		panel.add(panel_1);
-		panel_1.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-		
-		JLabel lblQunLKhch = new JLabel("Quản lý phòng");
-		lblQunLKhch.setForeground(Color.WHITE);
-		lblQunLKhch.setHorizontalAlignment(SwingConstants.LEFT);
-		lblQunLKhch.setHorizontalTextPosition(SwingConstants.CENTER);
-		lblQunLKhch.setFont(new Font("Liberation Mono", Font.BOLD, 18));
-		lblQunLKhch.setBorder(null);
-		lblQunLKhch.setAlignmentX(Component.CENTER_ALIGNMENT);
-		lblQunLKhch.setPreferredSize(new Dimension(500, 40));
-		lblQunLKhch.setMaximumSize(new Dimension(500, 40));
-		panel_1.add(lblQunLKhch);
-		
-		
+    public panel_room() {
+        this.setSize(1200, 800);
+        setLayout(new BorderLayout(0, 0));
 
-		JPanel panel_2 = new JPanel();
-		panel_2.setPreferredSize(new Dimension(10, 90));
-		panel.add(panel_2);
-		panel_2.setMinimumSize(new Dimension(1920, 10));
-		panel_2.setMaximumSize(new Dimension(32767, 90));
-		panel_2.setBackground(new Color(255, 255, 255));
-		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
-		
-		Component horizontalStrut = Box.createHorizontalStrut(20);
-		panel_2.add(horizontalStrut);
-		
-		JButton btnNewButton = new JButton("Thêm phòng");
-		btnNewButton.setMaximumSize(new Dimension(140, 35));
-		btnNewButton.setPreferredSize(new Dimension(140, 27));
-		panel_2.add(btnNewButton);
-		
-		Component horizontalStrut_1 = Box.createHorizontalStrut(20);
-		panel_2.add(horizontalStrut_1);
-		
-		JButton btnNewButton_1 = new JButton("Sửa phòng");
-		btnNewButton_1.setMaximumSize(new Dimension(140, 35));
-		btnNewButton_1.setPreferredSize(new Dimension(140, 27));
-		panel_2.add(btnNewButton_1);
-		
-		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
-		panel_2.add(horizontalStrut_2);
-		
-		JButton btnNewButton_2 = new JButton("Xóa phòng");
-		btnNewButton_2.setMaximumSize(new Dimension(140, 35));
-		btnNewButton_2.setPreferredSize(new Dimension(140, 27));
-		panel_2.add(btnNewButton_2);
-		
-		Component horizontalStrut_3 = Box.createHorizontalStrut(20);
-		panel_2.add(horizontalStrut_3);
-		
-		JButton btnNewButton_3 = new JButton("Quản lý loại phòng");
-		btnNewButton_3.setMaximumSize(new Dimension(150, 35));
-		btnNewButton_3.setPreferredSize(new Dimension(150, 27));
-		panel_2.add(btnNewButton_3);
-		
-		Component horizontalStrut_4 = Box.createHorizontalStrut(20);
-		horizontalStrut_4.setMaximumSize(new Dimension(400, 32767));
-		panel_2.add(horizontalStrut_4);
-		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setMaximumSize(new Dimension(250, 35));
-		comboBox.setPreferredSize(new Dimension(250, 35));
-		panel_2.add(comboBox);
-		
-		Component horizontalStrut_5 = Box.createHorizontalStrut(20);
-		panel_2.add(horizontalStrut_5);
-		
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setMaximumSize(new Dimension(250, 35));
-		comboBox_1.setPreferredSize(new Dimension(250, 35));
-		panel_2.add(comboBox_1);
-		
-		Component horizontalStrut_6 = Box.createHorizontalStrut(20);
-		panel_2.add(horizontalStrut_6);
-		
-		JButton btnNewButton_4 = new JButton("Đặt lại");
-		panel_2.add(btnNewButton_4);
-		
-		Component horizontalStrut_7 = Box.createHorizontalStrut(20);
-		panel_2.add(horizontalStrut_7);
-		
-		JPanel panel_3 = new JPanel();
-		panel_3.setMaximumSize(new Dimension(32767, 950));
-		panel_3.setPreferredSize(new Dimension(10, 950));
-		panel_3.setBackground(UIManager.getColor("ComboBox.buttonShadow"));
-		panel.add(panel_3);
-		panel_3.setLayout(new BorderLayout(0, 0));
-		
-		table = new JTable();
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-			},
-			new String[] {
-				"New column", "New column", "New column", "New column", "New column"
-			}
-		));
-		panel_3.add(table, BorderLayout.CENTER);
-		
-		
+        // --- 1. HEADER TITLE ---
+        JPanel panelHeader = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelHeader.setBackground(new Color(39, 83, 138));
+        panelHeader.setPreferredSize(new Dimension(10, 50));
+        
+        JLabel lblTitle = new JLabel(" QUẢN LÝ DANH SÁCH PHÒNG");
+        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        panelHeader.add(lblTitle);
+        add(panelHeader, BorderLayout.NORTH);
 
-	}
+        // --- 2. MAIN CONTAINER ---
+        JPanel panelMain = new JPanel();
+        panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
+        panelMain.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panelMain.setBackground(Color.WHITE);
+        add(panelMain, BorderLayout.CENTER);
 
+        // --- 3. TOOLBAR (Nút bấm & Bộ lọc) ---
+        JPanel panelToolbar = new JPanel();
+        panelToolbar.setBackground(Color.WHITE);
+        panelToolbar.setMaximumSize(new Dimension(32767, 50));
+        panelToolbar.setLayout(new BoxLayout(panelToolbar, BoxLayout.X_AXIS));
+
+        // Nhóm nút chức năng
+        JButton btnAdd = createButton("Thêm phòng", new Color(46, 204, 113));
+        JButton btnEdit = createButton("Sửa phòng", new Color(52, 152, 219));
+        JButton btnDelete = createButton("Xóa phòng", new Color(231, 76, 60));
+        JButton btnTypeMgmt = createButton("Loại phòng", new Color(155, 89, 182));
+
+        panelToolbar.add(btnAdd);
+        panelToolbar.add(Box.createHorizontalStrut(10));
+        panelToolbar.add(btnEdit);
+        panelToolbar.add(Box.createHorizontalStrut(10));
+        panelToolbar.add(btnDelete);
+        panelToolbar.add(Box.createHorizontalStrut(10));
+        panelToolbar.add(btnTypeMgmt);
+
+        // Khoảng trắng đẩy bộ lọc về bên phải
+        panelToolbar.add(Box.createHorizontalGlue());
+
+        // Bộ lọc
+        panelToolbar.add(new JLabel("Loại: "));
+        JComboBox<String> cbxType = new JComboBox<>(new String[]{"Tất cả", "Phòng Đơn", "Phòng Đôi", "VIP"});
+        cbxType.setMaximumSize(new Dimension(150, 30));
+        panelToolbar.add(cbxType);
+        
+        panelToolbar.add(Box.createHorizontalStrut(10));
+        
+        panelToolbar.add(new JLabel("Trạng thái: "));
+        JComboBox<String> cbxStatus = new JComboBox<>(new String[]{"Tất cả", "Trống", "Đang thuê", "Bảo trì"});
+        cbxStatus.setMaximumSize(new Dimension(150, 30));
+        panelToolbar.add(cbxStatus);
+
+        panelMain.add(panelToolbar);
+        panelMain.add(Box.createVerticalStrut(15));
+
+        // --- 4. TABLE VIEW ---
+        String[] columns = {"Số phòng", "Loại phòng", "Giá phòng", "Số người tối đa", "Trạng thái"};
+        model = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; 
+            }
+        };
+
+        table = new JTable(model);
+        table.setRowHeight(30);
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+        
+        JScrollPane scrollPane = new JScrollPane(table);
+        panelMain.add(scrollPane);
+
+        // --- 5. EVENTS ---
+        btnTypeMgmt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Giả sử add_edit_room_typeroom là JFrame hoặc JDialog của bạn
+                // typeRoomFrame.setVisible(true);
+                JOptionPane.showMessageDialog(null, "Mở cửa sổ Quản lý loại phòng");
+            }
+        });
+
+        loadDummyData();
+    }
+
+    private JButton createButton(String text, Color bg) {
+        JButton btn = new JButton(text);
+        btn.setBackground(bg);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setPreferredSize(new Dimension(130, 35));
+        btn.setMaximumSize(new Dimension(130, 35));
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        return btn;
+    }
+
+    private void loadDummyData() {
+        model.addRow(new Object[]{"101", "Phòng Đơn", "2.500.000", "1", "Trống"});
+        model.addRow(new Object[]{"102", "Phòng Đôi", "4.000.000", "2", "Đang thuê"});
+        model.addRow(new Object[]{"201", "VIP", "7.000.000", "4", "Bảo trì"});
+        model.addRow(new Object[]{"202", "Phòng Đôi", "4.000.000", "2", "Trống"});
+    }
 }

@@ -1,137 +1,114 @@
 package ui.Contract;
 
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import java.awt.FlowLayout;
-import java.awt.Font;
-
-import javax.swing.JTabbedPane;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import javax.swing.BoxLayout;
-import java.awt.Dimension;
-import javax.swing.JComboBox;
-import javax.swing.JButton;
-import java.awt.Component;
-import javax.swing.Box;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 
 public class panel_contract extends JPanel {
 
-	private static final long serialVersionUID = 1L;
-	private JTable table;
+    private static final long serialVersionUID = 1L;
+    private JTable table;
+    private DefaultTableModel model;
+    private JComboBox<String> cbxStatusFilter;
 
-	/**
-	 * Create the panel.
-	 */
-	public panel_contract() {
-		setLayout(new BorderLayout(0, 0));
-		this.setSize(1920,1080);
-		JPanel panel = new JPanel();
-		panel.setBackground(new Color(255, 255, 255));
-		add(panel, BorderLayout.CENTER);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		
-		JPanel panel_3 = new JPanel();
-		panel_3.setMaximumSize(new Dimension(32767, 40));
-		panel_3.setPreferredSize(new Dimension(10, 40));
-		panel_3.setBackground(new Color(39, 83, 138));
-		panel.add(panel_3);
-		panel_3.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-		
-		JLabel lblQunLKhch = new JLabel("Quản lý hợp đồng");
-		lblQunLKhch.setForeground(Color.WHITE);
-		lblQunLKhch.setHorizontalAlignment(SwingConstants.LEFT);
-		lblQunLKhch.setHorizontalTextPosition(SwingConstants.CENTER);
-		lblQunLKhch.setFont(new Font("Liberation Mono", Font.BOLD, 18));
-		lblQunLKhch.setBorder(null);
-		lblQunLKhch.setAlignmentX(Component.CENTER_ALIGNMENT);
-		lblQunLKhch.setPreferredSize(new Dimension(500, 40));
-		lblQunLKhch.setMaximumSize(new Dimension(500, 40));
-		panel_3.add(lblQunLKhch);
-		
-		JPanel panel_1 = new JPanel();
-		panel_1.setBackground(Color.WHITE);
-		panel_1.setPreferredSize(new Dimension(10, 100));
-		panel_1.setMaximumSize(new Dimension(1920, 100));
-		panel.add(panel_1);
-		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
-		
-		Component horizontalStrut = Box.createHorizontalStrut(20);
-		horizontalStrut.setMaximumSize(new Dimension(200, 32767));
-		panel_1.add(horizontalStrut);
-		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setPreferredSize(new Dimension(250, 26));
-		comboBox.setMaximumSize(new Dimension(250, 35));
-		panel_1.add(comboBox);
-		
-		Component horizontalStrut_1 = Box.createHorizontalStrut(20);
-		horizontalStrut_1.setMaximumSize(new Dimension(750, 32767));
-		panel_1.add(horizontalStrut_1);
-		
-		JButton btn_add = new JButton("Thêm hợp đồng");
-		btn_add.setPreferredSize(new Dimension(200, 35));
-		btn_add.setMaximumSize(new Dimension(180, 35));
-		panel_1.add(btn_add);
-		
-		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
-		panel_1.add(horizontalStrut_2);
-		
-		JButton btn_modify = new JButton("Chỉnh sửa");
-		btn_modify.setPreferredSize(new Dimension(200, 35));
-		btn_modify.setMaximumSize(new Dimension(180, 35));
-		panel_1.add(btn_modify);
-		
-		Component horizontalStrut_3 = Box.createHorizontalStrut(20);
-		panel_1.add(horizontalStrut_3);
-		
-		JButton btn_remove = new JButton("Xóa");
-		btn_remove.setPreferredSize(new Dimension(200, 35));
-		btn_remove.setMaximumSize(new Dimension(180, 35));
-		panel_1.add(btn_remove);
-		
-		Component horizontalStrut_4 = Box.createHorizontalStrut(20);
-		panel_1.add(horizontalStrut_4);
-		
-		JButton btn_view = new JButton("Xem chi tiết");
-		btn_view.setPreferredSize(new Dimension(200, 35));
-		btn_view.setMaximumSize(new Dimension(180, 35));
-		panel_1.add(btn_view);
-		
-		Component horizontalStrut_5 = Box.createHorizontalStrut(20);
-		panel_1.add(horizontalStrut_5);
-		
-		JButton btn_refresh = new JButton("Làm mới\n");
-		btn_refresh.setPreferredSize(new Dimension(200, 35));
-		btn_refresh.setMaximumSize(new Dimension(180, 35));
-		panel_1.add(btn_refresh);
-		
-		Component horizontalStrut_6 = Box.createHorizontalStrut(20);
-		panel_1.add(horizontalStrut_6);
-		
-		JPanel panel_2 = new JPanel();
-		panel_2.setBackground(Color.YELLOW);
-		panel_2.setPreferredSize(new Dimension(200, 35));
-		panel_2.setMaximumSize(new Dimension(1920, 1080));
-		panel.add(panel_2);
-		panel_2.setLayout(new BorderLayout(0, 0));
-		
-		table = new JTable();
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-			},
-			new String[] {
-				"Ng\u00E0y t\u1EA1o h\u1EE3p \u0111\u1ED3ng", "Tr\u1EA1ng th\u00E1i ", "Gi\u00E1 ph\u00F2ng", "S\u1ED1 ph\u00F2ng", "H\u1EA1n thu\u00EA", "Ng\u00E0y thu\u00EA", "M\u00E3 h\u1EE3p \u0111\u1ED3ng"
-			}
-		));
-		panel_2.add(table, BorderLayout.CENTER);
+    public panel_contract() {
+        // Cấu hình tổng thể
+        setLayout(new BorderLayout(0, 0));
+        this.setSize(1200, 800); 
+        setBackground(Color.WHITE);
 
-	}
+        // --- 1. HEADER TITLE ---
+        JPanel panelHeader = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelHeader.setBackground(new Color(39, 83, 138));
+        panelHeader.setPreferredSize(new Dimension(10, 50));
+        
+        JLabel lblTitle = new JLabel(" QUẢN LÝ HỢP ĐỒNG");
+        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        panelHeader.add(lblTitle);
+        add(panelHeader, BorderLayout.NORTH);
+
+        // --- 2. MAIN CONTENT AREA ---
+        JPanel panelMain = new JPanel();
+        panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
+        panelMain.setBorder(new EmptyBorder(15, 15, 15, 15));
+        panelMain.setBackground(Color.WHITE);
+        add(panelMain, BorderLayout.CENTER);
+
+        // --- 3. TOOLBAR (FILTER & BUTTONS) ---
+        JPanel panelToolbar = new JPanel();
+        panelToolbar.setBackground(Color.WHITE);
+        panelToolbar.setMaximumSize(new Dimension(32767, 45));
+        panelToolbar.setLayout(new BoxLayout(panelToolbar, BoxLayout.X_AXIS));
+
+        // Filter
+        panelToolbar.add(new JLabel("Lọc trạng thái: "));
+        cbxStatusFilter = new JComboBox<>(new String[]{"Tất cả hợp đồng", "Đang hiệu lực", "Đã thanh lý", "Quá hạn"});
+        cbxStatusFilter.setMaximumSize(new Dimension(200, 30));
+        panelToolbar.add(cbxStatusFilter);
+
+        panelToolbar.add(Box.createHorizontalGlue()); // Đẩy các nút về phía bên phải
+
+        // Buttons
+        JButton btnAdd = createStyledButton("Thêm hợp đồng", new Color(46, 204, 113));
+        JButton btnEdit = createStyledButton("Chỉnh sửa", new Color(52, 152, 219));
+        JButton btnDelete = createStyledButton("Xóa", new Color(231, 76, 60));
+        JButton btnRefresh = createStyledButton("Làm mới", new Color(149, 165, 166));
+
+        panelToolbar.add(btnAdd);
+        panelToolbar.add(Box.createHorizontalStrut(10));
+        panelToolbar.add(btnEdit);
+        panelToolbar.add(Box.createHorizontalStrut(10));
+        panelToolbar.add(btnDelete);
+        panelToolbar.add(Box.createHorizontalStrut(10));
+        panelToolbar.add(btnRefresh);
+
+        panelMain.add(panelToolbar);
+        panelMain.add(Box.createVerticalStrut(15));
+
+        // --- 4. DATA TABLE ---
+        String[] columnNames = {
+            "Mã hợp đồng", "Số phòng", "Ngày thuê", "Hạn thuê", "Giá thuê", "Trạng thái", "Ngày tạo"
+        };
+        
+        model = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Không cho phép sửa trực tiếp trên bảng
+            }
+        };
+
+        table = new JTable(model);
+        table.setRowHeight(30);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+        table.getTableHeader().setBackground(new Color(240, 240, 240));
+        
+        // Bọc bảng trong ScrollPane (Quan trọng)
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230)));
+        panelMain.add(scrollPane);
+
+        // Thêm dữ liệu mẫu
+        loadDummyData();
+    }
+
+    // Hàm hỗ trợ tạo Button đẹp hơn
+    private JButton createStyledButton(String text, Color bg) {
+        JButton btn = new JButton(text);
+        btn.setBackground(bg);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btn.setPreferredSize(new Dimension(130, 35));
+        btn.setMaximumSize(new Dimension(130, 35));
+        return btn;
+    }
+
+    private void loadDummyData() {
+        model.addRow(new Object[]{"HD001", "P.101", "01/01/2026", "12 tháng", "3.500.000", "Đang hiệu lực", "30/12/2025"});
+        model.addRow(new Object[]{"HD002", "P.202", "15/01/2026", "6 tháng", "4.000.000", "Đang hiệu lực", "10/01/2026"});
+        model.addRow(new Object[]{"HD003", "P.105", "20/12/2025", "12 tháng", "3.200.000", "Đã thanh lý", "15/12/2025"});
+    }
 }
