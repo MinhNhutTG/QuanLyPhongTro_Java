@@ -19,11 +19,14 @@ import java.awt.Component;
 import javax.swing.Box;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
 
 public class panel_invoice extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField textField;
+	private JTable table;
 
 	/**
 	 * Create the panel.
@@ -52,9 +55,10 @@ public class panel_invoice extends JPanel {
 		panel_1.add(lblNewLabel, BorderLayout.WEST);
 		
 		JPanel panel_2 = new JPanel();
+		panel_2.setBorder(new EmptyBorder(0, 0, 0, 0));
 		panel_2.setPreferredSize(new Dimension(10, 100));
 		panel_2.setMaximumSize(new Dimension(32767, 100));
-		panel_2.setBackground(new Color(0, 255, 64));
+		panel_2.setBackground(new Color(255, 255, 255));
 		panel.add(panel_2);
 		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
 		
@@ -128,22 +132,85 @@ public class panel_invoice extends JPanel {
 		panel_7.add(rdbtnNewRadioButton_1);
 		
 		JPanel panel_8 = new JPanel();
+		panel_8.setBorder(null);
+		panel_8.setBackground(new Color(255, 255, 255));
 		panel_2.add(panel_8);
 		panel_8.setLayout(new BoxLayout(panel_8, BoxLayout.X_AXIS));
 		
+		Component horizontalStrut_4 = Box.createHorizontalStrut(20);
+		horizontalStrut_4.setMaximumSize(new Dimension(100, 32767));
+		panel_8.add(horizontalStrut_4);
+		
 		textField = new JTextField();
+		textField.setMaximumSize(new Dimension(900, 40));
+		textField.setPreferredSize(new Dimension(400, 20));
 		panel_8.add(textField);
 		textField.setColumns(10);
 		
+		Component horizontalStrut_5 = Box.createHorizontalStrut(20);
+		panel_8.add(horizontalStrut_5);
+		
 		JButton btnNewButton = new JButton("Tìm kiếm");
+		btnNewButton.setMaximumSize(new Dimension(170, 35));
 		panel_8.add(btnNewButton);
 		
+		Component horizontalStrut_6 = Box.createHorizontalStrut(20);
+		panel_8.add(horizontalStrut_6);
+		
 		JButton btnNewButton_1 = new JButton("Tải lại");
+		btnNewButton_1.setMaximumSize(new Dimension(100, 35));
 		panel_8.add(btnNewButton_1);
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(new Color(255, 128, 0));
 		panel.add(panel_3);
+		panel_3.setLayout(new BorderLayout(0, 0));
+		
+		JPanel panel_9 = new JPanel();
+		panel_9.setPreferredSize(new Dimension(245, 10));
+		panel_9.setBackground(new Color(255, 255, 255));
+		panel_3.add(panel_9, BorderLayout.EAST);
+		panel_9.setLayout(new BoxLayout(panel_9, BoxLayout.Y_AXIS));
+		
+		JButton btnNewButton_2 = new JButton("Tạo HD tự động");
+		btnNewButton_2.setAlignmentX(Component.CENTER_ALIGNMENT);
+		btnNewButton_2.setMaximumSize(new Dimension(170, 35));
+		panel_9.add(btnNewButton_2);
+		
+		Component verticalStrut_1 = Box.createVerticalStrut(20);
+		panel_9.add(verticalStrut_1);
+		
+		JButton btnNewButton_3 = new JButton("Tạo hoá đơn");
+		btnNewButton_3.setAlignmentX(Component.CENTER_ALIGNMENT);
+		btnNewButton_3.setMaximumSize(new Dimension(170, 35));
+		panel_9.add(btnNewButton_3);
+		
+		Component verticalStrut_2 = Box.createVerticalStrut(20);
+		panel_9.add(verticalStrut_2);
+		
+		JButton btnNewButton_4 = new JButton("Chỉnh sửa");
+		btnNewButton_4.setAlignmentX(Component.CENTER_ALIGNMENT);
+		btnNewButton_4.setMaximumSize(new Dimension(170, 35));
+		panel_9.add(btnNewButton_4);
+		
+		Component verticalStrut_3 = Box.createVerticalStrut(20);
+		panel_9.add(verticalStrut_3);
+		
+		JButton btnNewButton_5 = new JButton("Xoá hoá đơn");
+		btnNewButton_5.setAlignmentX(Component.CENTER_ALIGNMENT);
+		btnNewButton_5.setMaximumSize(new Dimension(170, 35));
+		panel_9.add(btnNewButton_5);
+		
+		Component verticalStrut_4 = Box.createVerticalStrut(20);
+		panel_9.add(verticalStrut_4);
+		
+		JButton btnNewButton_6 = new JButton("Xem chi tiết");
+		btnNewButton_6.setAlignmentX(Component.CENTER_ALIGNMENT);
+		btnNewButton_6.setMaximumSize(new Dimension(170, 35));
+		panel_9.add(btnNewButton_6);
+		
+		table = new JTable();
+		panel_3.add(table, BorderLayout.CENTER);
 
 	}
 
