@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.awt.EventQueue;
 
@@ -13,6 +14,14 @@ import java.awt.EventQueue;
 public class MainApplication {
 
     public static void main(String[] args) {
+    	
+    	Dotenv dotenv = Dotenv.configure()
+                .ignoreIfMissing()
+                .load();
+
+        dotenv.entries().forEach(e ->
+            System.setProperty(e.getKey(), e.getValue())
+        );
         
         ConfigurableApplicationContext context = new SpringApplicationBuilder(MainApplication.class)
                 .headless(false) 
