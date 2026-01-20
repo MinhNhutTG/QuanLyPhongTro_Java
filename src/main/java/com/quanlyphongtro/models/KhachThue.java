@@ -30,5 +30,70 @@ public class KhachThue {
 
     @Column(length = 100)
     private String email;
+
+	public Integer getMaKhach() {
+		return maKhach;
+	}
+
+	public void setMaKhach(Integer maKhach) {
+		this.maKhach = maKhach;
+	}
+
+	public String getHoTen() {
+		return hoTen;
+	}
+
+	public void setHoTen(String hoTen) {
+		this.hoTen = hoTen;
+	}
+
+	public LocalDateTime getNgaySinh() {
+		return ngaySinh;
+	}
+
+	public void setNgaySinh(LocalDateTime ngaySinh) {
+		this.ngaySinh = ngaySinh;
+	}
+
+	public String getCccd() {
+		return cccd;
+	}
+
+	public void setCccd(String cccd) {
+		this.cccd = cccd;
+	}
+
+	public String getSoDienThoai() {
+		return soDienThoai;
+	}
+
+	public void setSoDienThoai(String soDienThoai) {
+		this.soDienThoai = soDienThoai;
+	}
+
+	public String getQueQuan() {
+		return queQuan;
+	}
+
+	public void setQueQuan(String queQuan) {
+		this.queQuan = queQuan;
+	}
+
+	public String getTrangThai() {
+		return trangThai;
+	}
+
+	public void setTrangThai(String trangThai) {
+		this.trangThai = trangThai;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+    
 }
 

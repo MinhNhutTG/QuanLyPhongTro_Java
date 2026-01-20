@@ -15,5 +15,31 @@ public class DichVu {
     private String tenDichVu;
 
     private BigDecimal gia;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getTenDichVu() {
+		return tenDichVu;
+	}
+
+	public void setTenDichVu(String tenDichVu) {
+		this.tenDichVu = tenDichVu;
+	}
+
+	public BigDecimal getGia() {
+		return gia;
+	}
+
+	public void setGia(BigDecimal gia) {
+		this.gia = gia;
+	}
+    
+    
 }
 

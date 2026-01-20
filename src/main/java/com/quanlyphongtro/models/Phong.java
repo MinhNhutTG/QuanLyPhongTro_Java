@@ -19,5 +19,39 @@ public class Phong {
 
     @Column(name = "ghi_chu", length = 2000)
     private String ghiChu;
+
+	public String getSoPhong() {
+		return soPhong;
+	}
+
+	public void setSoPhong(String soPhong) {
+		this.soPhong = soPhong;
+	}
+
+	public String getTrangThai() {
+		return trangThai;
+	}
+
+	public void setTrangThai(String trangThai) {
+		this.trangThai = trangThai;
+	}
+
+	public LoaiPhong getLoaiPhong() {
+		return loaiPhong;
+	}
+
+	public void setLoaiPhong(LoaiPhong loaiPhong) {
+		this.loaiPhong = loaiPhong;
+	}
+
+	public String getGhiChu() {
+		return ghiChu;
+	}
+
+	public void setGhiChu(String ghiChu) {
+		this.ghiChu = ghiChu;
+	}
+    
+    
 }
 

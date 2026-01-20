@@ -27,5 +27,63 @@ public class Config {
 
     @Column(name = "app_password", columnDefinition = "TEXT")
     private String appPassword;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getTenNhaTro() {
+		return tenNhaTro;
+	}
+
+	public void setTenNhaTro(String tenNhaTro) {
+		this.tenNhaTro = tenNhaTro;
+	}
+
+	public String getSoTaiKhoan() {
+		return soTaiKhoan;
+	}
+
+	public void setSoTaiKhoan(String soTaiKhoan) {
+		this.soTaiKhoan = soTaiKhoan;
+	}
+
+	public String getTenTaiKhoan() {
+		return tenTaiKhoan;
+	}
+
+	public void setTenTaiKhoan(String tenTaiKhoan) {
+		this.tenTaiKhoan = tenTaiKhoan;
+	}
+
+	public String getTenNganHang() {
+		return tenNganHang;
+	}
+
+	public void setTenNganHang(String tenNganHang) {
+		this.tenNganHang = tenNganHang;
+	}
+
+	public String getEmailSystem() {
+		return emailSystem;
+	}
+
+	public void setEmailSystem(String emailSystem) {
+		this.emailSystem = emailSystem;
+	}
+
+	public String getAppPassword() {
+		return appPassword;
+	}
+
+	public void setAppPassword(String appPassword) {
+		this.appPassword = appPassword;
+	}
+    
+    
 }
 

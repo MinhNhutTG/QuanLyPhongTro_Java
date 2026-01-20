@@ -24,5 +24,63 @@ public class HopDongThue {
     private String trangThai;
 
     private LocalDateTime ngayTaoHopDong;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public LocalDateTime getNgayThue() {
+		return ngayThue;
+	}
+
+	public void setNgayThue(LocalDateTime ngayThue) {
+		this.ngayThue = ngayThue;
+	}
+
+	public LocalDateTime getHanThue() {
+		return hanThue;
+	}
+
+	public void setHanThue(LocalDateTime hanThue) {
+		this.hanThue = hanThue;
+	}
+
+	public Phong getPhong() {
+		return phong;
+	}
+
+	public void setPhong(Phong phong) {
+		this.phong = phong;
+	}
+
+	public BigDecimal getGiaPhong() {
+		return giaPhong;
+	}
+
+	public void setGiaPhong(BigDecimal giaPhong) {
+		this.giaPhong = giaPhong;
+	}
+
+	public String getTrangThai() {
+		return trangThai;
+	}
+
+	public void setTrangThai(String trangThai) {
+		this.trangThai = trangThai;
+	}
+
+	public LocalDateTime getNgayTaoHopDong() {
+		return ngayTaoHopDong;
+	}
+
+	public void setNgayTaoHopDong(LocalDateTime ngayTaoHopDong) {
+		this.ngayTaoHopDong = ngayTaoHopDong;
+	}
+    
+    
 }
 
