@@ -1,133 +1,223 @@
 package com.quanlyphongtro.ui.Guest;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import javax.swing.border.*;
 
 public class panel_guest extends JPanel {
 
     private static final long serialVersionUID = 1L;
-    private JTextField txtSearch, txtGuestID, txtFullName, txtIDCard, txtPhone, txtEmail, txtHometown;
+    private JTextField txtSearch, txtGuestID, txtFullName, txtIDCard, txtPhone, txtEmail;
     private JTable tableGuests, tableContracts;
     private DefaultTableModel modelGuests, modelContracts;
     private JComboBox<String> cbxStatusFilter, cbxStatusDetail;
     private JSpinner spinnerDOB;
+    
+    // Hệ thống màu sắc hiện đại
+    private final Color PRIMARY_COLOR = new Color(41, 128, 185);    // Blue
+    private final Color SUCCESS_COLOR = new Color(39, 174, 96);    // Green
+    private final Color DANGER_COLOR = new Color(231, 76, 60);     // Red
+    private final Color WARNING_COLOR = new Color(241, 196, 15);   // Yellow
+    private final Color BACKGROUND_COLOR = new Color(240, 242, 245);
+    private final Color CARD_COLOR = Color.WHITE;
+    private final Font MAIN_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
     public panel_guest() {
-        this.setSize(1200, 800); // Kích thước hợp lý hơn cho màn hình desktop
-        setLayout(new BorderLayout(5, 5));
+        setBackground(BACKGROUND_COLOR);
+        setLayout(new BorderLayout(20, 20));
+        setBorder(new EmptyBorder(25, 25, 25, 25));
 
-        // --- TITLE PANEL ---
-        JPanel panelHeader = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelHeader.setBackground(new Color(39, 83, 138));
-        JLabel lblTitle = new JLabel("QUẢN LÝ KHÁCH THUÊ");
-        lblTitle.setForeground(Color.WHITE);
-        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblTitle.setBorder(new EmptyBorder(10, 20, 10, 10));
-        panelHeader.add(lblTitle);
-        add(panelHeader, BorderLayout.NORTH);
+        // --- TOP: TIÊU ĐỀ VÀ TÌM KIẾM ---
+        add(createHeaderPanel(), BorderLayout.NORTH);
 
-        // --- MAIN CONTENT PANEL ---
-        JPanel panelMain = new JPanel(new BorderLayout(10, 10));
-        panelMain.setBorder(new EmptyBorder(10, 10, 10, 10));
-        add(panelMain, BorderLayout.CENTER);
+        // --- CENTER: BẢNG DỮ LIỆU VÀ FORM ---
+        JPanel panelContent = new JPanel(new BorderLayout(20, 0));
+        panelContent.setOpaque(false);
+        panelContent.add(createTableSection(), BorderLayout.CENTER);
+        panelContent.add(createFormSection(), BorderLayout.EAST);
 
-        // --- LEFT SIDE: Table and Search ---
-        JPanel panelLeft = new JPanel(new BorderLayout(5, 10));
+        add(panelContent, BorderLayout.CENTER);
+
+        loadSampleData();
+        setupEvents();
+    }
+
+    private JPanel createHeaderPanel() {
+        JPanel header = new JPanel(new BorderLayout());
+        header.setOpaque(false);
+
+        // Title bên trái
+        JLabel lblTitle = new JLabel("Quản Lý Khách Thuê");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitle.setForeground(new Color(33, 37, 41));
+        header.add(lblTitle, BorderLayout.WEST);
+
+        // Search Bar bên phải
+        JPanel searchContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        searchContainer.setOpaque(false);
+
+        cbxStatusFilter = new JComboBox<>(new String[]{"Tất cả trạng thái", "Đang thuê", "Đã rời đi"});
+        cbxStatusFilter.setPreferredSize(new Dimension(150, 35));
         
-        // Toolbar (Search & Buttons)
-        JPanel panelToolbar = new JPanel(new GridLayout(2, 1, 5, 5));
-        
-        // Row 1: Search
-        JPanel panelSearch = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelSearch.add(new JLabel("Trạng thái:"));
-        cbxStatusFilter = new JComboBox<>(new String[]{"Tất cả", "Đang thuê", "Đã rời đi"});
-        panelSearch.add(cbxStatusFilter);
         txtSearch = new JTextField(20);
-        panelSearch.add(txtSearch);
-        panelSearch.add(new JButton("Tìm kiếm"));
+        txtSearch.setPreferredSize(new Dimension(200, 35));
+        // Giả lập placeholder nếu không dùng thư viện ngoài
+        txtSearch.setToolTipText("Nhập tên hoặc CCCD để tìm...");
+
+        JButton btnSearch = createStyledButton("Tìm kiếm", PRIMARY_COLOR, Color.WHITE);
         
-        // Row 2: Actions
-        JPanel panelActions = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JButton btnAdd = new JButton("Thêm mới");
-        JButton btnUpdate = new JButton("Cập nhật");
-        JButton btnDelete = new JButton("Xóa");
-        JButton btnReset = new JButton("Làm mới");
-        panelActions.add(btnAdd); panelActions.add(btnUpdate); 
-        panelActions.add(btnDelete); panelActions.add(btnReset);
+        searchContainer.add(new JLabel("Lọc:"));
+        searchContainer.add(cbxStatusFilter);
+        searchContainer.add(txtSearch);
+        searchContainer.add(btnSearch);
 
-        panelToolbar.add(panelSearch);
-        panelToolbar.add(panelActions);
-        panelLeft.add(panelToolbar, BorderLayout.NORTH);
+        header.add(searchContainer, BorderLayout.EAST);
+        return header;
+    }
 
-        // Table Guests
+    private JPanel createTableSection() {
+        JPanel panel = new JPanel(new BorderLayout(0, 15));
+        panel.setOpaque(false);
+
+        // Nút thao tác
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        actions.setOpaque(false);
+        
+        actions.add(createStyledButton(" + Thêm mới ", SUCCESS_COLOR, Color.WHITE));
+        actions.add(createStyledButton(" Cập nhật ", WARNING_COLOR, new Color(50, 50, 50)));
+        actions.add(createStyledButton(" Xóa khách ", DANGER_COLOR, Color.WHITE));
+        actions.add(createStyledButton(" Làm mới ", new Color(108, 117, 125), Color.WHITE));
+
+        // Bảng
         String[] columns = {"ID", "Họ tên", "CCCD", "SĐT", "Trạng thái"};
         modelGuests = new DefaultTableModel(columns, 0);
         tableGuests = new JTable(modelGuests);
-        tableGuests.setRowHeight(25);
-        JScrollPane scrollTable = new JScrollPane(tableGuests); // Quan trọng: Phải có ScrollPane
-        panelLeft.add(scrollTable, BorderLayout.CENTER);
-
-        panelMain.add(panelLeft, BorderLayout.CENTER);
-
-        // --- RIGHT SIDE: Details Form ---
-        JPanel panelRight = new JPanel();
-        panelRight.setPreferredSize(new Dimension(400, 0));
-        panelRight.setLayout(new BoxLayout(panelRight, BoxLayout.Y_AXIS));
+        styleTable(tableGuests);
         
-        // Guest Info Group
-        JPanel panelGuestInfo = new JPanel(new GridLayout(7, 2, 5, 10));
-        panelGuestInfo.setBorder(new TitledBorder(new LineBorder(Color.LIGHT_GRAY), "Thông tin chi tiết"));
+        JScrollPane scroll = new JScrollPane(tableGuests);
+        scroll.setBorder(new LineBorder(new Color(218, 220, 224), 1));
+        scroll.getViewport().setBackground(Color.WHITE);
+
+        panel.add(actions, BorderLayout.NORTH);
+        panel.add(scroll, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel createFormSection() {
+        JPanel formWrapper = new JPanel(new BorderLayout());
+        formWrapper.setPreferredSize(new Dimension(380, 0));
+        formWrapper.setBackground(CARD_COLOR);
+        formWrapper.setBorder(new CompoundBorder(
+            new LineBorder(new Color(218, 220, 224), 1),
+            new EmptyBorder(20, 20, 20, 20)
+        ));
+
+        JPanel formBody = new JPanel();
+        formBody.setLayout(new BoxLayout(formBody, BoxLayout.Y_AXIS));
+        formBody.setOpaque(false);
+
+        JLabel lblTitle = new JLabel("CHI TIẾT KHÁCH THUÊ");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        formBody.add(lblTitle);
+        formBody.add(Box.createVerticalStrut(20));
+
+        // Thêm các trường nhập liệu
+        addInputGroup(formBody, "Mã định danh", txtGuestID = new JTextField());
+        txtGuestID.setEditable(false);
+        txtGuestID.setBackground(new Color(248, 249, 250));
         
-        panelGuestInfo.add(new JLabel(" Mã khách:"));
-        txtGuestID = new JTextField(); txtGuestID.setEditable(false);
-        panelGuestInfo.add(txtGuestID);
-
-        panelGuestInfo.add(new JLabel(" Họ tên:"));
-        txtFullName = new JTextField();
-        panelGuestInfo.add(txtFullName);
-
-        panelGuestInfo.add(new JLabel(" Ngày sinh:"));
+        addInputGroup(formBody, "Họ và tên khách", txtFullName = new JTextField());
+        
+        // Ngày sinh dùng JSpinner
+        JLabel lblDOB = new JLabel("Ngày sinh");
+        lblDOB.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        formBody.add(lblDOB);
         spinnerDOB = new JSpinner(new SpinnerDateModel());
         spinnerDOB.setEditor(new JSpinner.DateEditor(spinnerDOB, "dd/MM/yyyy"));
-        panelGuestInfo.add(spinnerDOB);
+        spinnerDOB.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        formBody.add(spinnerDOB);
+        formBody.add(Box.createVerticalStrut(12));
 
-        panelGuestInfo.add(new JLabel(" CCCD:"));
-        txtIDCard = new JTextField();
-        panelGuestInfo.add(txtIDCard);
+        addInputGroup(formBody, "Số CCCD/Passport", txtIDCard = new JTextField());
+        addInputGroup(formBody, "Số điện thoại", txtPhone = new JTextField());
+        addInputGroup(formBody, "Email liên lạc", txtEmail = new JTextField());
 
-        panelGuestInfo.add(new JLabel(" Số điện thoại:"));
-        txtPhone = new JTextField();
-        panelGuestInfo.add(txtPhone);
-
-        panelGuestInfo.add(new JLabel(" Email:"));
-        txtEmail = new JTextField();
-        panelGuestInfo.add(txtEmail);
-
-        panelGuestInfo.add(new JLabel(" Trạng thái:"));
-        cbxStatusDetail = new JComboBox<>(new String[]{"Đang thuê", "Đã rời đi"});
-        panelGuestInfo.add(cbxStatusDetail);
-
-        panelRight.add(panelGuestInfo);
-        panelRight.add(Box.createVerticalStrut(10));
-
-        // Contract Info Group
-        String[] colHD = {"Mã HD", "Phòng", "Vai trò"};
-        modelContracts = new DefaultTableModel(colHD, 0);
-        tableContracts = new JTable(modelContracts);
-        JScrollPane scrollContract = new JScrollPane(tableContracts);
-        scrollContract.setBorder(new TitledBorder("Hợp đồng liên quan"));
-        scrollContract.setPreferredSize(new Dimension(0, 200));
+        // Hợp đồng liên quan (Phần phụ)
+        formBody.add(Box.createVerticalStrut(10));
+        JLabel lblHD = new JLabel("Hợp đồng liên quan");
+        lblHD.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        formBody.add(lblHD);
+        formBody.add(Box.createVerticalStrut(5));
         
-        panelRight.add(scrollContract);
-        panelMain.add(panelRight, BorderLayout.EAST);
+        modelContracts = new DefaultTableModel(new String[]{"Số HD", "Phòng", "Loại"}, 0);
+        tableContracts = new JTable(modelContracts);
+        styleTable(tableContracts);
+        JScrollPane scrollHD = new JScrollPane(tableContracts);
+        scrollHD.setPreferredSize(new Dimension(0, 120));
+        formBody.add(scrollHD);
 
-        // --- Dữ liệu mẫu & Sự kiện ---
-        loadSampleData();
-        setupEvents();
+        formWrapper.add(formBody, BorderLayout.NORTH);
+        return formWrapper;
+    }
+
+    // --- CÁC HÀM TIỆN ÍCH (UTILITIES) ---
+
+    private void addInputGroup(JPanel container, String labelText, JTextField field) {
+        JLabel label = new JLabel(labelText);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        field.setPreferredSize(new Dimension(0, 40));
+        field.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(206, 212, 218), 1),
+            new EmptyBorder(0, 10, 0, 10)
+        ));
+
+        container.add(label);
+        container.add(Box.createVerticalStrut(5));
+        container.add(field);
+        container.add(Box.createVerticalStrut(12));
+    }
+
+    private JButton createStyledButton(String text, Color bg, Color fg) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btn.setBackground(bg);
+        btn.setForeground(fg);
+        btn.setFocusPainted(false);
+        btn.setBorder(new EmptyBorder(10, 20, 10, 20));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        // Hiệu ứng hover
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                btn.setBackground(bg.brighter());
+            }
+            public void mouseExited(MouseEvent e) {
+                btn.setBackground(bg);
+            }
+        });
+        
+        return btn;
+    }
+
+    private void styleTable(JTable table) {
+        table.setRowHeight(35);
+        table.setFont(MAIN_FONT);
+        table.setSelectionBackground(new Color(232, 241, 249));
+        table.setSelectionForeground(Color.BLACK);
+        table.setShowGrid(false);
+        table.setIntercellSpacing(new Dimension(0, 0));
+        
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(Color.WHITE);
+        header.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        header.setForeground(new Color(108, 117, 125));
+        header.setBorder(new MatteBorder(0, 0, 1, 0, new Color(218, 220, 224)));
     }
 
     private void loadSampleData() {
@@ -145,7 +235,6 @@ public class panel_guest extends JPanel {
                     txtFullName.setText(modelGuests.getValueAt(row, 1).toString());
                     txtIDCard.setText(modelGuests.getValueAt(row, 2).toString());
                     txtPhone.setText(modelGuests.getValueAt(row, 3).toString());
-                    cbxStatusDetail.setSelectedItem(modelGuests.getValueAt(row, 4).toString());
                 }
             }
         });

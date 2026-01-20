@@ -1,9 +1,10 @@
 package com.quanlyphongtro.ui.Contract;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.border.*;
+import javax.swing.table.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class panel_contract extends JPanel {
 
@@ -11,98 +12,136 @@ public class panel_contract extends JPanel {
     private JTable table;
     private DefaultTableModel model;
     private JComboBox<String> cbxStatusFilter;
+    
+    // Hệ thống màu sắc đồng bộ (Modern UI)
+    private final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private final Color SUCCESS_COLOR = new Color(39, 174, 96);
+    private final Color DANGER_COLOR = new Color(231, 76, 60);
+    private final Color BACKGROUND_COLOR = new Color(240, 242, 245);
+    private final Color HEADER_BG = new Color(255, 255, 255);
+    private final Font MAIN_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
     public panel_contract() {
         // Cấu hình tổng thể
+        setBackground(BACKGROUND_COLOR);
         setLayout(new BorderLayout(0, 0));
-        this.setSize(1200, 800); 
-        setBackground(Color.WHITE);
+        setBorder(new EmptyBorder(25, 25, 25, 25));
 
-        // --- 1. HEADER TITLE ---
-        JPanel panelHeader = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelHeader.setBackground(new Color(39, 83, 138));
-        panelHeader.setPreferredSize(new Dimension(10, 50));
-        
-        JLabel lblTitle = new JLabel(" QUẢN LÝ HỢP ĐỒNG");
-        lblTitle.setForeground(Color.WHITE);
-        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        panelHeader.add(lblTitle);
-        add(panelHeader, BorderLayout.NORTH);
+        // --- 1. HEADER TITLE & SEARCH ---
+        add(createTopPanel(), BorderLayout.NORTH);
 
         // --- 2. MAIN CONTENT AREA ---
-        JPanel panelMain = new JPanel();
-        panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
-        panelMain.setBorder(new EmptyBorder(15, 15, 15, 15));
-        panelMain.setBackground(Color.WHITE);
+        JPanel panelMain = new JPanel(new BorderLayout(0, 15));
+        panelMain.setOpaque(false);
+        panelMain.setBorder(new EmptyBorder(15, 0, 0, 0));
+
+        // Toolbar: Nút chức năng
+        panelMain.add(createToolbar(), BorderLayout.NORTH);
+
+        // Table: Danh sách hợp đồng
+        panelMain.add(createTableSection(), BorderLayout.CENTER);
+
         add(panelMain, BorderLayout.CENTER);
 
-        // --- 3. TOOLBAR (FILTER & BUTTONS) ---
-        JPanel panelToolbar = new JPanel();
-        panelToolbar.setBackground(Color.WHITE);
-        panelToolbar.setMaximumSize(new Dimension(32767, 45));
-        panelToolbar.setLayout(new BoxLayout(panelToolbar, BoxLayout.X_AXIS));
+        loadDummyData();
+    }
 
-        // Filter
-        panelToolbar.add(new JLabel("Lọc trạng thái: "));
+    private JPanel createTopPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+
+        JLabel lblTitle = new JLabel("Quản Lý Hợp Đồng");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitle.setForeground(new Color(33, 37, 41));
+        
+        // Panel bên phải cho Filter
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        filterPanel.setOpaque(false);
+        
+        JLabel lblFilter = new JLabel("Trạng thái: ");
+        lblFilter.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        
         cbxStatusFilter = new JComboBox<>(new String[]{"Tất cả hợp đồng", "Đang hiệu lực", "Đã thanh lý", "Quá hạn"});
-        cbxStatusFilter.setMaximumSize(new Dimension(200, 30));
-        panelToolbar.add(cbxStatusFilter);
+        cbxStatusFilter.setPreferredSize(new Dimension(180, 35));
+        
+        filterPanel.add(lblFilter);
+        filterPanel.add(cbxStatusFilter);
 
-        panelToolbar.add(Box.createHorizontalGlue()); // Đẩy các nút về phía bên phải
+        panel.add(lblTitle, BorderLayout.WEST);
+        panel.add(filterPanel, BorderLayout.EAST);
+        return panel;
+    }
 
-        // Buttons
-        JButton btnAdd = createStyledButton("Thêm hợp đồng", new Color(46, 204, 113));
-        JButton btnEdit = createStyledButton("Chỉnh sửa", new Color(52, 152, 219));
-        JButton btnDelete = createStyledButton("Xóa", new Color(231, 76, 60));
-        JButton btnRefresh = createStyledButton("Làm mới", new Color(149, 165, 166));
+    private JPanel createToolbar() {
+        JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        toolbar.setOpaque(false);
 
-        panelToolbar.add(btnAdd);
-        panelToolbar.add(Box.createHorizontalStrut(10));
-        panelToolbar.add(btnEdit);
-        panelToolbar.add(Box.createHorizontalStrut(10));
-        panelToolbar.add(btnDelete);
-        panelToolbar.add(Box.createHorizontalStrut(10));
-        panelToolbar.add(btnRefresh);
+        toolbar.add(createStyledButton(" + Thêm hợp đồng", SUCCESS_COLOR, Color.WHITE));
+        toolbar.add(createStyledButton(" Sửa hợp đồng", PRIMARY_COLOR, Color.WHITE));
+        toolbar.add(createStyledButton(" Xóa", DANGER_COLOR, Color.WHITE));
+        toolbar.add(createStyledButton(" Làm mới", new Color(108, 117, 125), Color.WHITE));
 
-        panelMain.add(panelToolbar);
-        panelMain.add(Box.createVerticalStrut(15));
+        return toolbar;
+    }
 
-        // --- 4. DATA TABLE ---
+    private JScrollPane createTableSection() {
         String[] columnNames = {
             "Mã hợp đồng", "Số phòng", "Ngày thuê", "Hạn thuê", "Giá thuê", "Trạng thái", "Ngày tạo"
         };
-        
+
         model = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Không cho phép sửa trực tiếp trên bảng
+                return false;
             }
         };
 
         table = new JTable(model);
-        table.setRowHeight(30);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
-        table.getTableHeader().setBackground(new Color(240, 240, 240));
-        
-        // Bọc bảng trong ScrollPane (Quan trọng)
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230)));
-        panelMain.add(scrollPane);
+        styleTable(table);
 
-        // Thêm dữ liệu mẫu
-        loadDummyData();
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(new LineBorder(new Color(218, 220, 224), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        
+        return scrollPane;
     }
 
-    // Hàm hỗ trợ tạo Button đẹp hơn
-    private JButton createStyledButton(String text, Color bg) {
+    private void styleTable(JTable table) {
+        table.setRowHeight(35);
+        table.setFont(MAIN_FONT);
+        table.setSelectionBackground(new Color(232, 241, 249));
+        table.setSelectionForeground(Color.BLACK);
+        table.setShowGrid(false);
+        table.setIntercellSpacing(new Dimension(0, 0));
+
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(Color.WHITE);
+        header.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        header.setForeground(new Color(108, 117, 125));
+        header.setPreferredSize(new Dimension(0, 40));
+        header.setBorder(new MatteBorder(0, 0, 1, 0, new Color(218, 220, 224)));
+    }
+
+    private JButton createStyledButton(String text, Color bg, Color fg) {
         JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btn.setBackground(bg);
-        btn.setForeground(Color.WHITE);
+        btn.setForeground(fg);
         btn.setFocusPainted(false);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        btn.setPreferredSize(new Dimension(130, 35));
-        btn.setMaximumSize(new Dimension(130, 35));
+        btn.setBorder(new EmptyBorder(10, 15, 10, 15));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                btn.setBackground(bg.brighter());
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                btn.setBackground(bg);
+            }
+        });
+
         return btn;
     }
 

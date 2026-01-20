@@ -3,105 +3,139 @@ package com.quanlyphongtro.ui.Config;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
-import javax.swing.JLabel;
-import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import javax.swing.BoxLayout;
-import java.awt.Font;
-import java.awt.Component;
-import javax.swing.Box;
-import javax.swing.JTextField;
-import javax.swing.border.TitledBorder;
-import javax.swing.JButton;
-import javax.swing.border.EtchedBorder;
+import java.awt.event.*;
 
 public class panel_config extends JPanel {
 
-	private static final long serialVersionUID = 1L;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTextField textField_5;
-	private JTextField textField_6;
-	private JTextField textField_7;
+    private static final long serialVersionUID = 1L;
+    
+    // Hệ màu hiện đại đồng bộ
+    private final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private final Color SUCCESS_COLOR = new Color(39, 174, 96);
+    private final Color BACKGROUND_COLOR = new Color(240, 242, 245);
+    private final Font MAIN_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
-	/**
-	 * Create the panel.
-	 */
-	public panel_config() {
-		setBackground(Color.WHITE);
-        setLayout(null); // Sử dụng Absolute Layout để căn chỉnh chính xác như trong ảnh
+    public panel_config() {
+        setBackground(BACKGROUND_COLOR);
+        setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(25, 25, 25, 25));
 
-        // --- 1. CARD: TÀI KHOẢN NGÂN HÀNG ---
-        JPanel cardBank = createConfigCard("TÀI KHOẢN NGÂN HÀNG", 
-            new String[]{"Số tài khoản", "Tên Tài Khoản", "Tên Ngân Hàng"}, 
-            "🏦", 30, 30, 480, 220);
-        add(cardBank);
+        // --- 1. HEADER ---
+        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        header.setOpaque(false);
+        JLabel lblTitle = new JLabel("Cài Đặt Hệ Thống");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitle.setForeground(new Color(33, 37, 41));
+        header.add(lblTitle);
+        add(header, BorderLayout.NORTH);
 
-        // --- 2. CARD: EMAIL HỆ THỐNG ---
-        JPanel cardEmail = createConfigCard("EMAIL HỆ THỐNG", 
-            new String[]{"Email", "Mật khẩu ứng dụng (App Password)"}, 
-            "🤖", 540, 30, 480, 220);
-        add(cardEmail);
+        // --- 2. MAIN CONTENT (Sử dụng FlowLayout để các card tự nhảy dòng) ---
+        JPanel pnlContent = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        pnlContent.setOpaque(false);
 
-        // --- 3. CARD: TÀI KHOẢN ĐĂNG NHẬP ---
-        JPanel cardAccount = createConfigCard("TÀI KHOẢN ĐĂNG NHẬP", 
-            new String[]{"Tên Đăng Nhập", "Mật Khẩu", "EmailUser"}, 
-            "👤", 30, 270, 480, 250);
-        add(cardAccount);
+        // Card Ngân hàng
+        pnlContent.add(createConfigCard("TÀI KHOẢN NGÂN HÀNG", 
+            new String[]{"Số tài khoản", "Tên chủ tài khoản", "Tên ngân hàng"}, "🏦"));
 
-	}
-	private JPanel createConfigCard(String title, String[] fields, String iconText, int x, int y, int w, int h) {
-        JPanel card = new JPanel(null);
-        card.setBounds(x, y, w, h);
-        card.setBackground(new Color(51, 102, 204)); // Màu xanh đậm của card
-        card.setBorder(new LineBorder(Color.WHITE, 1));
+        // Card Email
+        pnlContent.add(createConfigCard("EMAIL HỆ THỐNG", 
+            new String[]{"Email gửi tin", "Mật khẩu ứng dụng (App Password)"}, "🤖"));
 
-        // Tiêu đề Card
-        JLabel lblTitle = new JLabel(title, SwingConstants.CENTER);
-        lblTitle.setForeground(Color.WHITE);
-        lblTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
-        lblTitle.setBounds(0, 5, w, 30);
-        card.add(lblTitle);
+        // Card Tài khoản
+        pnlContent.add(createConfigCard("TÀI KHOẢN ĐĂNG NHẬP", 
+            new String[]{"Tên đăng nhập", "Mật khẩu mới", "Email khôi phục"}, "👤"));
 
-        // Icon minh họa (Sử dụng Emoji hoặc bạn có thể thay bằng ImageIcon)
+        add(new JScrollPane(pnlContent) {{
+            setOpaque(false);
+            getViewport().setOpaque(false);
+            setBorder(null);
+        }}, BorderLayout.CENTER);
+    }
+
+    private JPanel createConfigCard(String title, String[] fields, String iconText) {
+        JPanel card = new JPanel();
+        card.setPreferredSize(new Dimension(480, 280));
+        card.setBackground(Color.WHITE);
+        card.setLayout(new BorderLayout());
+        card.setBorder(new CompoundBorder(
+            new LineBorder(new Color(218, 220, 224), 1, true),
+            new EmptyBorder(15, 15, 15, 15)
+        ));
+
+        // Title của card
+        JLabel lblTitle = new JLabel(title);
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblTitle.setForeground(PRIMARY_COLOR);
+        lblTitle.setBorder(new EmptyBorder(0, 0, 15, 0));
+        card.add(lblTitle, BorderLayout.NORTH);
+
+        // Center Content: Gồm Icon và Fields
+        JPanel pnlCenter = new JPanel(new BorderLayout(20, 0));
+        pnlCenter.setOpaque(false);
+
+        // Vùng Icon và Nút Lưu
+        JPanel pnlLeft = new JPanel(new BorderLayout(0, 10));
+        pnlLeft.setOpaque(false);
+        pnlLeft.setPreferredSize(new Dimension(100, 0));
+        
         JLabel lblIcon = new JLabel(iconText, SwingConstants.CENTER);
-        lblIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 70));
-        lblIcon.setBounds(20, 50, 100, 100);
-        card.add(lblIcon);
+        lblIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 60));
+        pnlLeft.add(lblIcon, BorderLayout.CENTER);
 
-        // Nút Lưu (Màu xanh lá)
-        JButton btnSave = new JButton("Lưu");
-        btnSave.setBackground(new Color(51, 204, 51));
+        JButton btnSave = new JButton("Lưu lại");
+        btnSave.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnSave.setBackground(SUCCESS_COLOR);
         btnSave.setForeground(Color.WHITE);
-        btnSave.setFont(new Font("Tahoma", Font.BOLD, 12));
         btnSave.setFocusPainted(false);
-        btnSave.setBounds(30, 160, 80, 30);
-        card.add(btnSave);
+        btnSave.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnSave.setPreferredSize(new Dimension(80, 35));
+        pnlLeft.add(btnSave, BorderLayout.SOUTH);
 
-        // Các ô nhập liệu (Sử dụng TitledBorder để tạo label bao quanh ô text)
-        int inputY = 45;
+        pnlCenter.add(pnlLeft, BorderLayout.WEST);
+
+        // Vùng nhập liệu
+        JPanel pnlInputs = new JPanel();
+        pnlInputs.setLayout(new BoxLayout(pnlInputs, BoxLayout.Y_AXIS));
+        pnlInputs.setOpaque(false);
+
         for (String fieldName : fields) {
-            JTextField txtInput = new JTextField();
-            txtInput.setBackground(Color.WHITE);
+            JLabel lbl = new JLabel(fieldName);
+            lbl.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            lbl.setForeground(new Color(100, 100, 100));
+            pnlInputs.add(lbl);
             
-            // Tạo border có tiêu đề trắng
-            TitledBorder titledBorder = BorderFactory.createTitledBorder(
-                new LineBorder(Color.WHITE), fieldName);
-            titledBorder.setTitleColor(Color.WHITE);
-            titledBorder.setTitleFont(new Font("Tahoma", Font.PLAIN, 11));
-            
-            txtInput.setBorder(titledBorder);
-            txtInput.setBounds(140, inputY, 320, 50);
-            card.add(txtInput);
-            
-            inputY += 60; // Khoảng cách giữa các ô
+            JTextField txt = new JTextField();
+            txt.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+            txt.setPreferredSize(new Dimension(0, 35));
+            txt.setBorder(new CompoundBorder(
+                new LineBorder(new Color(200, 200, 200)),
+                new EmptyBorder(0, 8, 0, 8)
+            ));
+            pnlInputs.add(txt);
+            pnlInputs.add(Box.createVerticalStrut(10));
         }
+
+        pnlCenter.add(pnlInputs, BorderLayout.CENTER);
+        card.add(pnlCenter, BorderLayout.CENTER);
+
+        // Hiệu ứng Hover cho card
+        card.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                card.setBorder(new CompoundBorder(
+                    new LineBorder(PRIMARY_COLOR, 1, true),
+                    new EmptyBorder(15, 15, 15, 15)
+                ));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                card.setBorder(new CompoundBorder(
+                    new LineBorder(new Color(218, 220, 224), 1, true),
+                    new EmptyBorder(15, 15, 15, 15)
+                ));
+            }
+        });
 
         return card;
     }
-
 }

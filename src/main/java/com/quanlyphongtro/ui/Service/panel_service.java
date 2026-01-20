@@ -2,131 +2,218 @@ package com.quanlyphongtro.ui.Service;
 
 import javax.swing.*;
 import javax.swing.border.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.util.Calendar;
-import java.util.Date;
+import java.awt.event.*;
 
 public class panel_service extends JPanel {
 
     private static final long serialVersionUID = 1L;
     private JTextField txtSoPhong, txtKi, txtDienCu, txtDienMoi, txtGiaDien, txtNuocCu, txtNuocMoi, txtGiaNuoc, txtTienMang;
     private JTable table;
+    private DefaultTableModel model;
     private JLabel lblMaHD;
+    private JSpinner spinDate;
+    private JComboBox<String> cbFilterStatus;
+
+    // Hệ màu hiện đại
+    private final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private final Color SUCCESS_COLOR = new Color(39, 174, 96);
+    private final Color DANGER_COLOR = new Color(231, 76, 60);
+    private final Color BACKGROUND_COLOR = new Color(240, 242, 245);
 
     public panel_service() {
-        this.setPreferredSize(new Dimension(1200, 800)); // Kích thước chuẩn linh hoạt hơn 1080p
-        setLayout(new BorderLayout(0, 0));
+        setBackground(BACKGROUND_COLOR);
+        setLayout(new BorderLayout(20, 20));
+        setBorder(new EmptyBorder(25, 25, 25, 25));
 
-        // --- PANEL TRÊN CÙNG: TIÊU ĐỀ ---
-        JPanel pnlHeader = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
-        pnlHeader.setBackground(new Color(39, 83, 138));
-        JLabel lblTitle = new JLabel("QUẢN LÝ DỊCH VỤ PHÒNG");
-        lblTitle.setForeground(Color.WHITE);
-        lblTitle.setFont(new Font("SansSerif", Font.BOLD, 18));
-        pnlHeader.add(lblTitle);
-        add(pnlHeader, BorderLayout.NORTH);
+        // --- HEADER ---
+        add(createHeader(), BorderLayout.NORTH);
 
-        // PANEL CHÍNH CHỨA TOOLBAR + FORM + TABLE
-        JPanel pnlMain = new JPanel();
-        pnlMain.setLayout(new BoxLayout(pnlMain, BoxLayout.Y_AXIS));
-        pnlMain.setBorder(new EmptyBorder(10, 10, 10, 10));
-        add(pnlMain, BorderLayout.CENTER);
+        // --- MAIN CONTENT ---
+        JPanel panelMain = new JPanel(new BorderLayout(0, 20));
+        panelMain.setOpaque(false);
 
-        // --- 1. TOOLBAR: BỘ LỌC VÀ NÚT BẤM ---
-        JPanel pnlToolbar = new JPanel();
-        pnlToolbar.setLayout(new BoxLayout(pnlToolbar, BoxLayout.X_AXIS));
-        pnlToolbar.setMaximumSize(new Dimension(32767, 80));
+        panelMain.add(createInputForm(), BorderLayout.NORTH);
+        panelMain.add(createTableSection(), BorderLayout.CENTER);
+
+        add(panelMain, BorderLayout.CENTER);
+
+        // --- FOOTER ---
+        add(createFooterNav(), BorderLayout.SOUTH);
         
-        // Nhóm sắp xếp
-        JPanel pnlSort = new JPanel(new GridLayout(2, 1));
-        pnlSort.setBorder(new TitledBorder("Sắp xếp"));
-        JRadioButton rdGần = new JRadioButton("Kì gần nhất", true);
-        JRadioButton rdXa = new JRadioButton("Kì xa nhất");
-        ButtonGroup bgSort = new ButtonGroup();
-        bgSort.add(rdGần); bgSort.add(rdXa);
-        pnlSort.add(rdGần); pnlSort.add(rdXa);
-        pnlToolbar.add(pnlSort);
+        loadSampleData();
+    }
 
-        pnlToolbar.add(Box.createHorizontalStrut(10));
+    private JPanel createHeader() {
+        JPanel header = new JPanel(new BorderLayout());
+        header.setOpaque(false);
 
-        // Nhóm Trạng thái
-        JPanel pnlStatusFilter = new JPanel(new BorderLayout());
-        pnlStatusFilter.setBorder(new TitledBorder("Trạng thái"));
-        JComboBox<String> cbFilterStatus = new JComboBox<>(new String[]{"Tất cả", "Đã thanh toán", "Chưa thanh toán"});
-        pnlStatusFilter.add(cbFilterStatus);
-        pnlToolbar.add(pnlStatusFilter);
+        JLabel lblTitle = new JLabel("Quản Lý Dịch Vụ Phòng");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitle.setForeground(new Color(33, 37, 41));
+        header.add(lblTitle, BorderLayout.WEST);
 
-        pnlToolbar.add(Box.createHorizontalGlue());
+        // Toolbar: Gom nhóm Filter và Buttons
+        JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        toolbar.setOpaque(false);
 
-        // Nhóm Nút chức năng
-        String[] btnLabels = {"Thêm mới", "Chỉnh sửa", "Xóa", "Làm mới", "Quản lý giá"};
-        for (String label : btnLabels) {
-            JButton btn = new JButton(label);
-            btn.setPreferredSize(new Dimension(120, 35));
-            pnlToolbar.add(btn);
-            pnlToolbar.add(Box.createHorizontalStrut(5));
-            
-            if(label.equals("Quản lý giá")) {
-                btn.addActionListener(e -> {
-                    // add_edit_service modify_service = new add_edit_service();
-                    // modify_service.setVisible(true);
-                    JOptionPane.showMessageDialog(this, "Mở Quản lý giá dịch vụ");
-                });
-            }
-        }
-        pnlMain.add(pnlToolbar);
-        pnlMain.add(Box.createVerticalStrut(10));
+        cbFilterStatus = new JComboBox<>(new String[]{"Tất cả trạng thái", "Đã thanh toán", "Chưa thanh toán"});
+        cbFilterStatus.setPreferredSize(new Dimension(180, 35));
+        toolbar.add(cbFilterStatus);
 
-        // --- 2. FORM: CẬP NHẬT DỊCH VỤ (GridBagLayout cho cân đối) ---
-        JPanel pnlForm = new JPanel(new GridBagLayout());
-        pnlForm.setBorder(new TitledBorder("Cập nhật dịch vụ phòng"));
-        pnlForm.setBackground(Color.WHITE);
+        JButton btnPrice = createStyledButton("Quản lý giá", new Color(155, 89, 182), Color.WHITE);
+        toolbar.add(btnPrice);
+
+        header.add(toolbar, BorderLayout.EAST);
+        return header;
+    }
+
+    private JPanel createInputForm() {
+        JPanel card = new JPanel(new BorderLayout(20, 15));
+        card.setBackground(Color.WHITE);
+        card.setBorder(new CompoundBorder(
+            new LineBorder(new Color(218, 220, 224), 1),
+            new EmptyBorder(20, 20, 20, 20)
+        ));
+
+        // Grid nhập liệu
+        JPanel gridFields = new JPanel(new GridBagLayout());
+        gridFields.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.insets = new Insets(8, 10, 8, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
 
-        // Dòng 1: Mã HD và Số Phòng
-        gbc.gridx = 0; gbc.gridy = 0; pnlForm.add(new JLabel("Mã sử dụng:"), gbc);
-        lblMaHD = new JLabel("HD222"); lblMaHD.setFont(new Font("Dialog", Font.BOLD, 14)); gbc.gridx = 1; pnlForm.add(lblMaHD, gbc);
-        gbc.gridx = 2; pnlForm.add(new JLabel("Số phòng:"), gbc);
-        txtSoPhong = new JTextField(10); gbc.gridx = 3; pnlForm.add(txtSoPhong, gbc);
+        // Dòng 1: Mã, Số phòng, Kỳ
+        gbc.gridy = 0;
+        gbc.gridx = 0; gridFields.add(new JLabel("Mã sử dụng:"), gbc);
+        lblMaHD = new JLabel("HD222");
+        lblMaHD.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblMaHD.setForeground(PRIMARY_COLOR);
+        gbc.gridx = 1; gridFields.add(lblMaHD, gbc);
+
+        gbc.gridx = 2; gridFields.add(new JLabel("Số phòng:"), gbc);
+        txtSoPhong = createStyledTextField(); gbc.gridx = 3; gridFields.add(txtSoPhong, gbc);
+
+        gbc.gridx = 4; gridFields.add(new JLabel("Kỳ sử dụng:"), gbc);
+        txtKi = createStyledTextField(); gbc.gridx = 5; gridFields.add(txtKi, gbc);
 
         // Dòng 2: Chỉ số điện
-        gbc.gridx = 0; gbc.gridy = 1; pnlForm.add(new JLabel("Số điện cũ:"), gbc);
-        txtDienCu = new JTextField(10); gbc.gridx = 1; pnlForm.add(txtDienCu, gbc);
-        gbc.gridx = 2; gbc.gridy = 1; pnlForm.add(new JLabel("Số điện mới:"), gbc);
-        txtDienMoi = new JTextField(10); gbc.gridx = 3; pnlForm.add(txtDienMoi, gbc);
+        gbc.gridy = 1;
+        gbc.gridx = 0; gridFields.add(new JLabel("Số điện cũ:"), gbc);
+        txtDienCu = createStyledTextField(); gbc.gridx = 1; gridFields.add(txtDienCu, gbc);
+
+        gbc.gridx = 2; gridFields.add(new JLabel("Số điện mới:"), gbc);
+        txtDienMoi = createStyledTextField(); gbc.gridx = 3; gridFields.add(txtDienMoi, gbc);
+
+        gbc.gridx = 4; gridFields.add(new JLabel("Giá điện:"), gbc);
+        txtGiaDien = createStyledTextField(); gbc.gridx = 5; gridFields.add(txtGiaDien, gbc);
 
         // Dòng 3: Chỉ số nước
-        gbc.gridx = 0; gbc.gridy = 2; pnlForm.add(new JLabel("Số nước cũ:"), gbc);
-        txtNuocCu = new JTextField(10); gbc.gridx = 1; pnlForm.add(txtNuocCu, gbc);
-        gbc.gridx = 2; gbc.gridy = 2; pnlForm.add(new JLabel("Số nước mới:"), gbc);
-        txtNuocMoi = new JTextField(10); gbc.gridx = 3; pnlForm.add(txtNuocMoi, gbc);
+        gbc.gridy = 2;
+        gbc.gridx = 0; gridFields.add(new JLabel("Số nước cũ:"), gbc);
+        txtNuocCu = createStyledTextField(); gbc.gridx = 1; gridFields.add(txtNuocCu, gbc);
 
-        // Dòng 4: Các thông tin khác
-        gbc.gridx = 0; gbc.gridy = 3; pnlForm.add(new JLabel("Ngày tạo:"), gbc);
-        JSpinner spinDate = new JSpinner(new SpinnerDateModel());
-        gbc.gridx = 1; pnlForm.add(spinDate, gbc);
-        gbc.gridx = 2; pnlForm.add(new JLabel("Tiền mạng:"), gbc);
-        txtTienMang = new JTextField(10); gbc.gridx = 3; pnlForm.add(txtTienMang, gbc);
+        gbc.gridx = 2; gridFields.add(new JLabel("Số nước mới:"), gbc);
+        txtNuocMoi = createStyledTextField(); gbc.gridx = 3; gridFields.add(txtNuocMoi, gbc);
 
-        pnlMain.add(pnlForm);
-        pnlMain.add(Box.createVerticalStrut(10));
+        gbc.gridx = 4; gridFields.add(new JLabel("Giá nước:"), gbc);
+        txtGiaNuoc = createStyledTextField(); gbc.gridx = 5; gridFields.add(txtGiaNuoc, gbc);
 
-        // --- 3. BẢNG DỮ LIỆU (Có ScrollPane) ---
+        // Dòng 4: Tiền mạng & Ngày tạo
+        gbc.gridy = 3;
+        gbc.gridx = 0; gridFields.add(new JLabel("Tiền mạng:"), gbc);
+        txtTienMang = createStyledTextField(); gbc.gridx = 1; gridFields.add(txtTienMang, gbc);
+
+        gbc.gridx = 2; gridFields.add(new JLabel("Ngày tạo:"), gbc);
+        spinDate = new JSpinner(new SpinnerDateModel());
+        spinDate.setEditor(new JSpinner.DateEditor(spinDate, "dd/MM/yyyy"));
+        spinDate.setPreferredSize(new Dimension(0, 35));
+        gbc.gridx = 3; gridFields.add(spinDate, gbc);
+
+        // Nút chức năng chính
+        JPanel btnAction = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        btnAction.setOpaque(false);
+        btnAction.add(createStyledButton("Thêm mới", SUCCESS_COLOR, Color.WHITE));
+        btnAction.add(createStyledButton("Chỉnh sửa", PRIMARY_COLOR, Color.WHITE));
+        btnAction.add(createStyledButton("Xóa", DANGER_COLOR, Color.WHITE));
+        btnAction.add(createStyledButton("Làm mới", new Color(108, 117, 125), Color.WHITE));
+
+        card.add(gridFields, BorderLayout.CENTER);
+        card.add(btnAction, BorderLayout.SOUTH);
+
+        return card;
+    }
+
+    private JPanel createTableSection() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+
         String[] columns = {"Mã HD", "Phòng", "Kì", "Điện Cũ", "Điện Mới", "Nước Cũ", "Nước Mới", "Mạng", "Ngày tạo", "Trạng thái"};
-        DefaultTableModel model = new DefaultTableModel(columns, 20);
+        model = new DefaultTableModel(columns, 0);
         table = new JTable(model);
-        table.setRowHeight(25);
-        JScrollPane scrollPane = new JScrollPane(table);
-        pnlMain.add(scrollPane);
+        styleTable(table);
+        
+        JScrollPane scroll = new JScrollPane(table);
+        scroll.setBorder(new LineBorder(new Color(218, 220, 224), 1));
+        panel.add(scroll, BorderLayout.CENTER);
 
-        // --- 4. PANEL PHỤ TRỢ DƯỚI CÙNG ---
-        JPanel pnlFooter = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        pnlFooter.add(new JButton("<< Phòng trước"));
-        pnlFooter.add(new JButton("Phòng tiếp theo >>"));
-        add(pnlFooter, BorderLayout.SOUTH);
+        return panel;
+    }
+
+    private JPanel createFooterNav() {
+        JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        footer.setOpaque(false);
+        
+        JButton btnPrev = createStyledButton("<< Phòng trước", Color.WHITE, Color.DARK_GRAY);
+        btnPrev.setBorder(new LineBorder(new Color(200, 200, 200)));
+        JButton btnNext = createStyledButton("Phòng tiếp theo >>", Color.WHITE, Color.DARK_GRAY);
+        btnNext.setBorder(new LineBorder(new Color(200, 200, 200)));
+
+        footer.add(btnPrev);
+        footer.add(btnNext);
+        return footer;
+    }
+
+    // --- HELPER METHODS ---
+    private JTextField createStyledTextField() {
+        JTextField tf = new JTextField();
+        tf.setPreferredSize(new Dimension(0, 35));
+        tf.setBorder(new CompoundBorder(new LineBorder(new Color(206, 212, 218)), new EmptyBorder(0, 8, 0, 8)));
+        return tf;
+    }
+
+    private JButton createStyledButton(String text, Color bg, Color fg) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btn.setBackground(bg);
+        btn.setForeground(fg);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setPreferredSize(new Dimension(130, 40));
+        
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) { btn.setBackground(bg.brighter()); }
+            public void mouseExited(MouseEvent e) { btn.setBackground(bg); }
+        });
+        return btn;
+    }
+
+    private void styleTable(JTable table) {
+        table.setRowHeight(35);
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        table.setShowGrid(false);
+        table.setIntercellSpacing(new Dimension(0, 0));
+        
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(Color.WHITE);
+        header.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        header.setPreferredSize(new Dimension(0, 40));
+        header.setBorder(new MatteBorder(0, 0, 1, 0, new Color(218, 220, 224)));
+    }
+
+    private void loadSampleData() {
+        model.addRow(new Object[]{"HD222", "101", "01/2026", "1250", "1380", "450", "462", "100.000", "20/01/2026", "Chưa thanh toán"});
     }
 }

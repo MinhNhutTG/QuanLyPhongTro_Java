@@ -1,12 +1,10 @@
 package com.quanlyphongtro.ui.Invoice;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.border.*;
+import javax.swing.table.*;
 import java.awt.*;
-import java.util.Date;
-import java.util.Calendar;
+import java.awt.event.*;
 
 public class panel_invoice extends JPanel {
 
@@ -14,108 +12,168 @@ public class panel_invoice extends JPanel {
     private JTextField txtSearch;
     private JTable table;
     private DefaultTableModel model;
-    private ButtonGroup bgPaymentStatus; // Nhóm RadioButton
+    
+    // Hệ thống màu sắc đồng bộ
+    private final Color PRIMARY_COLOR = new Color(41, 128, 185);    // Blue
+    private final Color SUCCESS_COLOR = new Color(39, 174, 96);    // Green
+    private final Color DANGER_COLOR = new Color(231, 76, 60);     // Red
+    private final Color WARNING_COLOR = new Color(241, 196, 15);   // Yellow
+    private final Color BACKGROUND_COLOR = new Color(240, 242, 245);
+    private final Font MAIN_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
     public panel_invoice() {
-        this.setSize(1200, 800);
-        setLayout(new BorderLayout(0, 0));
+        setBackground(BACKGROUND_COLOR);
+        setLayout(new BorderLayout(20, 20));
+        setBorder(new EmptyBorder(25, 25, 25, 25));
 
-        // --- 1. HEADER TITLE ---
-        JPanel panelHeader = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelHeader.setBackground(new Color(39, 83, 138));
-        panelHeader.setPreferredSize(new Dimension(10, 50));
+        // --- 1. TOP: TIÊU ĐỀ VÀ BỘ LỌC TỔNG QUÁT ---
+        add(createHeaderPanel(), BorderLayout.NORTH);
+
+        // --- 2. CENTER: BẢNG DỮ LIỆU VÀ THANH CÔNG CỤ ---
+        JPanel panelContent = new JPanel(new BorderLayout(20, 0));
+        panelContent.setOpaque(false);
         
-        JLabel lblTitle = new JLabel(" QUẢN LÝ HÓA ĐƠN");
-        lblTitle.setForeground(Color.WHITE);
-        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        panelHeader.add(lblTitle);
-        add(panelHeader, BorderLayout.NORTH);
+        panelContent.add(createTableSection(), BorderLayout.CENTER);
+        panelContent.add(createActionSidebar(), BorderLayout.EAST);
 
-        // --- 2. MAIN CONTENT AREA ---
-        JPanel panelMain = new JPanel();
-        panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
-        panelMain.setBorder(new EmptyBorder(10, 10, 10, 10));
-        panelMain.setBackground(Color.WHITE);
-        add(panelMain, BorderLayout.CENTER);
+        add(panelContent, BorderLayout.CENTER);
 
-        // --- 3. FILTER SECTION ---
-        JPanel panelFilterContainer = new JPanel();
-        panelFilterContainer.setBackground(Color.WHITE);
-        panelFilterContainer.setMaximumSize(new Dimension(32767, 100));
-        panelFilterContainer.setLayout(new BoxLayout(panelFilterContainer, BoxLayout.X_AXIS));
+        loadDummyData();
+    }
 
-        // Lọc theo thời gian và trạng thái
-        JPanel panelFilterLeft = new JPanel();
-        panelFilterLeft.setBorder(new TitledBorder(null, "Bộ lọc hóa đơn", TitledBorder.LEADING, TitledBorder.TOP, null, Color.GRAY));
-        panelFilterLeft.setBackground(Color.WHITE);
-        panelFilterLeft.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
+    private JPanel createHeaderPanel() {
+        JPanel header = new JPanel(new BorderLayout());
+        header.setOpaque(false);
 
-        panelFilterLeft.add(new JLabel("Tháng/Năm:"));
+        // Tiêu đề
+        JLabel lblTitle = new JLabel("Quản Lý Hóa Đơn");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitle.setForeground(new Color(33, 37, 41));
+        header.add(lblTitle, BorderLayout.WEST);
+
+        // Bộ lọc nhanh
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        filterPanel.setOpaque(false);
+
+        filterPanel.add(new JLabel("Tháng/Năm:"));
         JSpinner spinnerDate = new JSpinner(new SpinnerDateModel());
         spinnerDate.setEditor(new JSpinner.DateEditor(spinnerDate, "MM/yyyy"));
-        spinnerDate.setPreferredSize(new Dimension(120, 30));
-        panelFilterLeft.add(spinnerDate);
+        spinnerDate.setPreferredSize(new Dimension(120, 35));
+        filterPanel.add(spinnerDate);
 
-        // Radio Buttons Trạng thái
-        bgPaymentStatus = new ButtonGroup();
+        txtSearch = new JTextField(18);
+        txtSearch.setPreferredSize(new Dimension(200, 35));
+        // Giả lập placeholder
+        txtSearch.setToolTipText("Tìm mã HD, tên khách...");
+        filterPanel.add(txtSearch);
+
+        JButton btnSearch = createStyledButton("Tìm kiếm", PRIMARY_COLOR, Color.WHITE);
+        filterPanel.add(btnSearch);
+
+        header.add(filterPanel, BorderLayout.EAST);
+        return header;
+    }
+
+    private JPanel createTableSection() {
+        JPanel panel = new JPanel(new BorderLayout(0, 15));
+        panel.setOpaque(false);
+
+        // Filter trạng thái bằng RadioButtons nằm trong một "Card" nhỏ
+        JPanel statusCard = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
+        statusCard.setBackground(Color.WHITE);
+        statusCard.setBorder(new LineBorder(new Color(218, 220, 224), 1));
+
+        JLabel lblStatus = new JLabel("Trạng thái thanh toán:");
+        lblStatus.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        statusCard.add(lblStatus);
+
+        JRadioButton rdAll = new JRadioButton("Tất cả", true);
         JRadioButton rdPaid = new JRadioButton("Đã thanh toán");
         JRadioButton rdUnpaid = new JRadioButton("Chưa thanh toán");
-        rdPaid.setBackground(Color.WHITE);
-        rdUnpaid.setBackground(Color.WHITE);
-        bgPaymentStatus.add(rdPaid);
-        bgPaymentStatus.add(rdUnpaid);
         
-        panelFilterLeft.add(new JLabel("| Trạng thái:"));
-        panelFilterLeft.add(rdPaid);
-        panelFilterLeft.add(rdUnpaid);
+        ButtonGroup bg = new ButtonGroup();
+        for (JRadioButton rd : new JRadioButton[]{rdAll, rdPaid, rdUnpaid}) {
+            rd.setBackground(Color.WHITE);
+            rd.setFont(MAIN_FONT);
+            bg.add(rd);
+            statusCard.add(rd);
+        }
 
-        panelFilterContainer.add(panelFilterLeft);
-
-        // Ô tìm kiếm nhanh
-        JPanel panelSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 25));
-        panelSearch.setBackground(Color.WHITE);
-        txtSearch = new JTextField(20);
-        txtSearch.setPreferredSize(new Dimension(200, 35));
-        JButton btnSearch = new JButton("Tìm kiếm");
-        btnSearch.setPreferredSize(new Dimension(100, 35));
-        panelSearch.add(txtSearch);
-        panelSearch.add(btnSearch);
-
-        panelFilterContainer.add(panelSearch);
-        panelMain.add(panelFilterContainer);
-        panelMain.add(Box.createVerticalStrut(10));
-
-        // --- 4. TABLE & ACTION BUTTONS ---
-        JPanel panelTableArea = new JPanel(new BorderLayout(10, 0));
-        panelTableArea.setBackground(Color.WHITE);
-
-        // Table
+        // Bảng dữ liệu
         String[] columns = {"Mã hóa đơn", "Phòng", "Khách hàng", "Ngày lập", "Tổng tiền", "Trạng thái"};
         model = new DefaultTableModel(columns, 0);
         table = new JTable(model);
-        table.setRowHeight(30);
-        JScrollPane scrollPane = new JScrollPane(table);
-        panelTableArea.add(scrollPane, BorderLayout.CENTER);
+        styleTable(table);
+        
+        JScrollPane scroll = new JScrollPane(table);
+        scroll.setBorder(new LineBorder(new Color(218, 220, 224), 1));
+        scroll.getViewport().setBackground(Color.WHITE);
 
-        // Nút chức năng (Cột bên phải)
-        JPanel panelActions = new JPanel();
-        panelActions.setPreferredSize(new Dimension(180, 0));
-        panelActions.setBackground(Color.WHITE);
-        panelActions.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 10));
+        panel.add(statusCard, BorderLayout.NORTH);
+        panel.add(scroll, BorderLayout.CENTER);
+        return panel;
+    }
 
-        String[] btnLabels = {"Tạo HD tự động", "Tạo hóa đơn", "Chỉnh sửa", "Xóa hóa đơn", "Xem chi tiết", "In hóa đơn"};
-        for (String label : btnLabels) {
-            JButton btn = new JButton(label);
-            btn.setPreferredSize(new Dimension(160, 40));
-            btn.setFocusPainted(false);
-            if(label.equals("Xóa hóa đơn")) btn.setForeground(Color.RED);
-            panelActions.add(btn);
-        }
+    private JPanel createActionSidebar() {
+        JPanel sidebar = new JPanel();
+        sidebar.setPreferredSize(new Dimension(200, 0));
+        sidebar.setBackground(Color.WHITE);
+        sidebar.setBorder(new CompoundBorder(
+            new LineBorder(new Color(218, 220, 224), 1),
+            new EmptyBorder(15, 15, 15, 15)
+        ));
+        sidebar.setLayout(new GridLayout(7, 1, 0, 12));
 
-        panelTableArea.add(panelActions, BorderLayout.EAST);
-        panelMain.add(panelTableArea);
+        JLabel lblAction = new JLabel("THAO TÁC");
+        lblAction.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblAction.setHorizontalAlignment(SwingConstants.CENTER);
+        sidebar.add(lblAction);
 
-        loadDummyData();
+        sidebar.add(createStyledButton("Tạo HD tự động", SUCCESS_COLOR, Color.WHITE));
+        sidebar.add(createStyledButton("Tạo hóa đơn", new Color(46, 204, 113), Color.WHITE));
+        sidebar.add(createStyledButton("Chỉnh sửa", WARNING_COLOR, new Color(50, 50, 50)));
+        sidebar.add(createStyledButton("Xem chi tiết", PRIMARY_COLOR, Color.WHITE));
+        sidebar.add(createStyledButton("In hóa đơn", new Color(149, 165, 166), Color.WHITE));
+        sidebar.add(createStyledButton("Xóa hóa đơn", DANGER_COLOR, Color.WHITE));
+
+        return sidebar;
+    }
+
+    private void styleTable(JTable table) {
+        table.setRowHeight(35);
+        table.setFont(MAIN_FONT);
+        table.setSelectionBackground(new Color(232, 241, 249));
+        table.setSelectionForeground(Color.BLACK);
+        table.setShowGrid(false);
+        table.setIntercellSpacing(new Dimension(0, 0));
+
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(Color.WHITE);
+        header.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        header.setForeground(new Color(108, 117, 125));
+        header.setPreferredSize(new Dimension(0, 40));
+        header.setBorder(new MatteBorder(0, 0, 1, 0, new Color(218, 220, 224)));
+        
+        // Căn lề phải cho cột Tổng tiền
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
+        table.getColumnModel().getColumn(4).setCellRenderer(rightRenderer);
+    }
+
+    private JButton createStyledButton(String text, Color bg, Color fg) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btn.setBackground(bg);
+        btn.setForeground(fg);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setBorder(new EmptyBorder(5, 10, 5, 10));
+
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) { btn.setBackground(bg.brighter()); }
+            public void mouseExited(MouseEvent e) { btn.setBackground(bg); }
+        });
+        return btn;
     }
 
     private void loadDummyData() {
