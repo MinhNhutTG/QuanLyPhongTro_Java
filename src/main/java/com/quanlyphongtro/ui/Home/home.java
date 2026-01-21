@@ -30,6 +30,15 @@ import java.awt.event.ActionEvent;
 import java.awt.CardLayout;
 import javax.swing.border.LineBorder;
 
+import com.quanlyphongtro.ui.Config.panel_config;
+import com.quanlyphongtro.ui.Contract.panel_contract;
+import com.quanlyphongtro.ui.Guest.panel_guest;
+import com.quanlyphongtro.ui.Invoice.panel_invoice;
+import com.quanlyphongtro.ui.Report.panel_report;
+import com.quanlyphongtro.ui.Room.panel_room;
+import com.quanlyphongtro.ui.Service.panel_service;
+import org.springframework.beans.factory.annotation.Autowired;
+
 @org.springframework.stereotype.Component
 public class home extends JFrame {
 
@@ -39,12 +48,31 @@ public class home extends JFrame {
 	private String[] features =  {"home", "guest", "contract", "room", "service", "invoice", "report", "config", "exit"};
 	private CardLayout cardLayout;
 	private JButton[] btnCategories;
-
-
+	private final panel_home panelHome;
+	private final panel_guest panelGuest;
+	private final panel_contract panelContract;
+	private final panel_room panelRoom;
+	private final panel_service panelService;
+	private final panel_invoice panelInvoice;
+	private final panel_report panelReport;
+	private final panel_config panelConfig;
 	/**
 	 * Create the frame.
 	 */
-	public home() {
+	@Autowired
+	public home(panel_home panelHome, panel_guest panelGuest, panel_contract panelContract,
+				panel_room panelRoom, panel_service panelService, panel_invoice panelInvoice,
+				panel_report panelReport, panel_config panelConfig) {
+
+		this.panelHome = panelHome;
+		this.panelGuest = panelGuest;
+		this.panelContract = panelContract;
+		this.panelRoom = panelRoom;
+		this.panelService = panelService;
+		this.panelInvoice = panelInvoice;
+		this.panelReport = panelReport;
+		this.panelConfig = panelConfig;
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		this.setSize(1920,1080); 
@@ -68,15 +96,15 @@ public class home extends JFrame {
 		main_panel.setLayout(cardLayout);
 		main_panel.setPreferredSize(new Dimension(10, 60));
 		contentPane.add(main_panel, BorderLayout.CENTER);
-		
-		main_panel.add(new panel_home(), "panelhome");
-		main_panel.add(new com.quanlyphongtro.ui.Guest.panel_guest(), "panelguest");
-		main_panel.add(new com.quanlyphongtro.ui.Contract.panel_contract(), "panelcontract");
-		main_panel.add(new com.quanlyphongtro.ui.Room.panel_room(), "panelroom");
-		main_panel.add(new com.quanlyphongtro.ui.Service.panel_service(), "panelservice");
-		main_panel.add(new com.quanlyphongtro.ui.Invoice.panel_invoice(), "panelinvoice");
-		main_panel.add(new com.quanlyphongtro.ui.Report.panel_report(), "panelreport");
-		main_panel.add(new com.quanlyphongtro.ui.Config.panel_config(), "panelconfig");
+
+		main_panel.add(this.panelHome, "panelhome");
+		main_panel.add(this.panelGuest, "panelguest");
+		main_panel.add(this.panelContract, "panelcontract");
+		main_panel.add(this.panelRoom, "panelroom");
+		main_panel.add(this.panelService, "panelservice");
+		main_panel.add(this.panelInvoice, "panelinvoice");
+		main_panel.add(this.panelReport, "panelreport");
+		main_panel.add(this.panelConfig, "panelconfig");
 		
 		JLabel lblNewLabel_1 = new JLabel("QUẢN LÝ PHÒNG TRỌ");
 		lblNewLabel_1.setForeground(new Color(255, 255, 255));

@@ -10,12 +10,13 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 import java.awt.EventQueue;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.quanlyphongtro")
 public class MainApplication {
 
     public static void main(String[] args) {
-    	
-    	Dotenv dotenv = Dotenv.configure()
+
+
+        Dotenv dotenv = Dotenv.configure()
                 .ignoreIfMissing()
                 .load();
 

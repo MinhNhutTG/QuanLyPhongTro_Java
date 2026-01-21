@@ -1,10 +1,12 @@
 package com.quanlyphongtro.ui.Report;
 
+import org.springframework.stereotype.Component;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
-
+@Component
 public class panel_report extends JPanel {
 
     private static final long serialVersionUID = 1L;

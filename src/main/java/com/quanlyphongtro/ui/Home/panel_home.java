@@ -17,7 +17,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.ImageIcon;
 import javax.swing.Box;
 import java.awt.Font;
-
+@org.springframework.stereotype.Component
 public class panel_home extends JPanel {
 
 	private static final long serialVersionUID = 1L;

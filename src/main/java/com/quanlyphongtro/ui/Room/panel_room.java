@@ -1,17 +1,24 @@
 package com.quanlyphongtro.ui.Room;
 
+import com.quanlyphongtro.config.SpringContext;
+import com.quanlyphongtro.dto.PhongDto;
+import com.quanlyphongtro.service.PhongService;
+
 import javax.swing.*;
+
 import javax.swing.border.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 
+@org.springframework.stereotype.Component
 public class panel_room extends JPanel {
 
     private static final long serialVersionUID = 1L;
     private JTable table;
     private DefaultTableModel model;
     
+
     // Hệ thống màu sắc đồng bộ (Modern UI)
     private final Color PRIMARY_COLOR = new Color(41, 128, 185);    // Blue
     private final Color SUCCESS_COLOR = new Color(39, 174, 96);    // Green
@@ -19,13 +26,20 @@ public class panel_room extends JPanel {
     private final Color PURPLE_COLOR = new Color(155, 89, 182);   // Purple
     private final Color BACKGROUND_COLOR = new Color(240, 242, 245);
     private final Font MAIN_FONT = new Font("Segoe UI", Font.PLAIN, 14);
-    
+
+    private final PhongService phongService;
+
     private JButton btnAdd;
     private JButton btnUpdate;
     private JButton btnDelete;
     private JButton btnTypeMgmt;
 
+
+
+
     public panel_room() {
+    	this.phongService =
+                SpringContext.getBean(PhongService.class);
         // Cấu hình tổng thể
         setBackground(BACKGROUND_COLOR);
         setLayout(new BorderLayout(0, 0));
@@ -46,8 +60,11 @@ public class panel_room extends JPanel {
         panelMain.add(createTableSection(), BorderLayout.CENTER);
 
         add(panelMain, BorderLayout.CENTER);
+
+        loadPhongFromDB();
+
         setupEvent();
-        loadDummyData();
+
     }
 
     private JPanel createTopPanel() {
@@ -98,7 +115,7 @@ public class panel_room extends JPanel {
     }
 
     private JScrollPane createTableSection() {
-        String[] columns = {"Số phòng", "Loại phòng", "Giá phòng", "Số người tối đa", "Trạng thái"};
+        String[] columns = {"Số phòng", "Loại phòng", "Giá phòng", "Trạng thái"};
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -135,7 +152,8 @@ public class panel_room extends JPanel {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
-        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer); // Trạng thái
+
     }
 
     private JButton createStyledButton(String text, Color bg, Color fg) {
@@ -172,10 +190,17 @@ public class panel_room extends JPanel {
     	});
     }
 
-    private void loadDummyData() {
-        model.addRow(new Object[]{"101", "Phòng Đơn", "2.500.000", "1", "Trống"});
-        model.addRow(new Object[]{"102", "Phòng Đôi", "4.000.000", "2", "Đang thuê"});
-        model.addRow(new Object[]{"201", "VIP", "7.000.000", "4", "Bảo trì"});
-        model.addRow(new Object[]{"202", "Phòng Đôi", "4.000.000", "2", "Trống"});
+    private void loadPhongFromDB() {
+        model.setRowCount(0); // clear table
+
+        for (PhongDto dto : phongService.getAllPhong()) {
+            model.addRow(new Object[]{
+                dto.getSoPhong(),
+                dto.getTenLoai(),
+                dto.getGiaPhong(),
+                dto.getTrangThai()
+            });
+        }
     }
+
 }

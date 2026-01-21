@@ -1,11 +1,13 @@
 package com.quanlyphongtro.ui.Service;
 
+import org.springframework.stereotype.Component;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
-
+@Component
 public class panel_service extends JPanel {
 
     private static final long serialVersionUID = 1L;
