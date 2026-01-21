@@ -1,15 +1,17 @@
 package com.quanlyphongtro.ui.Room;
 
 import com.quanlyphongtro.config.SpringContext;
+import com.quanlyphongtro.dto.LoaiPhongDto;
 import com.quanlyphongtro.dto.PhongDto;
+import com.quanlyphongtro.service.LoaiPhongService;
 import com.quanlyphongtro.service.PhongService;
 
 import javax.swing.*;
-
 import javax.swing.border.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 
 @org.springframework.stereotype.Component
 public class panel_room extends JPanel {
@@ -17,54 +19,50 @@ public class panel_room extends JPanel {
     private static final long serialVersionUID = 1L;
     private JTable table;
     private DefaultTableModel model;
-    
 
-    // Hệ thống màu sắc đồng bộ (Modern UI)
-    private final Color PRIMARY_COLOR = new Color(41, 128, 185);    // Blue
-    private final Color SUCCESS_COLOR = new Color(39, 174, 96);    // Green
-    private final Color DANGER_COLOR = new Color(231, 76, 60);     // Red
-    private final Color PURPLE_COLOR = new Color(155, 89, 182);   // Purple
-    private final Color BACKGROUND_COLOR = new Color(240, 242, 245);
-    private final Font MAIN_FONT = new Font("Segoe UI", Font.PLAIN, 14);
-
+    // Components
     private final PhongService phongService;
+    private final LoaiPhongService loaiPhongService; // [THÊM MỚI] Để load filter
 
     private JButton btnAdd;
     private JButton btnUpdate;
     private JButton btnDelete;
     private JButton btnTypeMgmt;
 
+    // Filters
+    private JComboBox<Object> cbxType; // Object để chứa cả String "Tất cả" và LoaiPhongDto
+    private JComboBox<String> cbxStatus;
 
-
+    // Colors & Fonts (Giữ nguyên)
+    private final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private final Color SUCCESS_COLOR = new Color(39, 174, 96);
+    private final Color DANGER_COLOR = new Color(231, 76, 60);
+    private final Color BACKGROUND_COLOR = new Color(240, 242, 245);
+    private final Font MAIN_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
     public panel_room() {
-    	this.phongService =
-                SpringContext.getBean(PhongService.class);
-        // Cấu hình tổng thể
+        this.phongService = SpringContext.getBean(PhongService.class);
+        this.loaiPhongService = SpringContext.getBean(LoaiPhongService.class);
+
         setBackground(BACKGROUND_COLOR);
         setLayout(new BorderLayout(0, 0));
         setBorder(new EmptyBorder(25, 25, 25, 25));
 
-        // --- 1. TOP: TIÊU ĐỀ VÀ BỘ LỌC ---
         add(createTopPanel(), BorderLayout.NORTH);
 
-        // --- 2. MAIN CONTENT AREA ---
         JPanel panelMain = new JPanel(new BorderLayout(0, 15));
         panelMain.setOpaque(false);
         panelMain.setBorder(new EmptyBorder(15, 0, 0, 0));
 
-        // Toolbar: Nhóm các nút chức năng
         panelMain.add(createToolbar(), BorderLayout.NORTH);
-
-        // Table: Danh sách phòng
         panelMain.add(createTableSection(), BorderLayout.CENTER);
 
         add(panelMain, BorderLayout.CENTER);
 
+        // [SỬA] Load filter trước rồi mới load data
+        loadFilterData();
         loadPhongFromDB();
-
         setupEvent();
-
     }
 
     private JPanel createTopPanel() {
@@ -74,20 +72,19 @@ public class panel_room extends JPanel {
         JLabel lblTitle = new JLabel("Quản Lý Danh Sách Phòng");
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
         lblTitle.setForeground(new Color(33, 37, 41));
-        
-        // Panel bên phải cho các bộ lọc ComboBox
+
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         filterPanel.setOpaque(false);
-        
-        // Filter Loại Phòng
+
+        // [SỬA] Filter Loại Phòng (Dùng JComboBox<Object>)
         filterPanel.add(new JLabel("Loại:"));
-        JComboBox<String> cbxType = new JComboBox<>(new String[]{"Tất cả", "Phòng Đơn", "Phòng Đôi", "VIP"});
-        cbxType.setPreferredSize(new Dimension(130, 35));
+        cbxType = new JComboBox<>();
+        cbxType.setPreferredSize(new Dimension(150, 35));
         filterPanel.add(cbxType);
-        
+
         // Filter Trạng Thái
         filterPanel.add(new JLabel("Trạng thái:"));
-        JComboBox<String> cbxStatus = new JComboBox<>(new String[]{"Tất cả", "Trống", "Đang thuê", "Bảo trì"});
+        cbxStatus = new JComboBox<>(new String[]{"Tất cả", "Trống", "Đang thuê", "Bảo trì"});
         cbxStatus.setPreferredSize(new Dimension(130, 35));
         filterPanel.add(cbxStatus);
 
@@ -96,64 +93,61 @@ public class panel_room extends JPanel {
         return panel;
     }
 
+    // [THÊM MỚI] Load dữ liệu vào Filter ComboBox
+    private void loadFilterData() {
+        cbxType.removeAllItems();
+        cbxType.addItem("Tất cả");
+        List<LoaiPhongDto> types = loaiPhongService.getAllLoaiPhong();
+        for (LoaiPhongDto type : types) {
+            cbxType.addItem(type); // Add DTO, toString hiển thị tên
+        }
+    }
+
+    // [GIỮ NGUYÊN] Layout toolbar
     private JPanel createToolbar() {
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         toolbar.setOpaque(false);
 
         btnAdd = createStyledButton(" Thêm mới ", SUCCESS_COLOR, Color.WHITE);
         btnUpdate = createStyledButton(" Cập nhật ", PRIMARY_COLOR, new Color(50, 50, 50));
-        btnDelete = createStyledButton(" Xóa khách ", DANGER_COLOR, Color.WHITE);
+        btnDelete = createStyledButton(" Xóa phòng ", DANGER_COLOR, Color.WHITE); // Đổi tên cho đúng ngữ nghĩa
         btnTypeMgmt = createStyledButton("  Quản lý loại phòng ", new Color(108, 117, 125), Color.WHITE);
 
         toolbar.add(btnAdd);
         toolbar.add(btnUpdate);
         toolbar.add(btnDelete);
         toolbar.add(btnTypeMgmt);
-
-
         return toolbar;
     }
 
+    // [GIỮ NGUYÊN] Layout Table
     private JScrollPane createTableSection() {
         String[] columns = {"Số phòng", "Loại phòng", "Giá phòng", "Trạng thái"};
         model = new DefaultTableModel(columns, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; 
-            }
+            public boolean isCellEditable(int row, int column) { return false; }
         };
 
         table = new JTable(model);
         styleTable(table);
-        
+
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(new LineBorder(new Color(218, 220, 224), 1));
-        scrollPane.getViewport().setBackground(Color.WHITE);
-        
         return scrollPane;
     }
 
     private void styleTable(JTable table) {
         table.setRowHeight(35);
         table.setFont(MAIN_FONT);
-        table.setSelectionBackground(new Color(232, 241, 249));
-        table.setSelectionForeground(Color.BLACK);
         table.setShowGrid(false);
         table.setIntercellSpacing(new Dimension(0, 0));
-
         JTableHeader header = table.getTableHeader();
-        header.setBackground(Color.WHITE);
         header.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        header.setForeground(new Color(108, 117, 125));
-        header.setPreferredSize(new Dimension(0, 40));
-        header.setBorder(new MatteBorder(0, 0, 1, 0, new Color(218, 220, 224)));
 
-        // Căn giữa dữ liệu cho cột Số phòng và Trạng thái
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
-        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer); // Trạng thái
-
+        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
     }
 
     private JButton createStyledButton(String text, Color bg, Color fg) {
@@ -162,45 +156,90 @@ public class panel_room extends JPanel {
         btn.setBackground(bg);
         btn.setForeground(fg);
         btn.setFocusPainted(false);
-        btn.setBorder(new EmptyBorder(10, 15, 10, 15));
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        btn.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                btn.setBackground(bg.brighter());
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                btn.setBackground(bg);
-            }
-        });
-
         return btn;
     }
+
+    // [QUAN TRỌNG] Gắn sự kiện logic
     private void setupEvent() {
-    	btnAdd.addActionListener(e -> {
-            new add_edit_room().setVisible(true);
+        // 1. THÊM MỚI: Truyền NULL vào soPhongCanSua
+        btnAdd.addActionListener(e -> {
+            // Callback: () -> loadPhongFromDB() nghĩa là khi form đóng và lưu thành công, sẽ gọi hàm load lại bảng
+            new add_edit_room(null, this::loadPhongFromDB).setVisible(true);
         });
-    	btnUpdate.addActionListener(e -> {
-    		new add_edit_room().setVisible(true);
-    	});
-    	btnTypeMgmt.addActionListener(e->{
-    		new add_edit_room_typeroom().setVisible(true);
-    	});
+
+        // 2. CẬP NHẬT: Truyền Số Phòng đang chọn vào
+        btnUpdate.addActionListener(e -> {
+            int row = table.getSelectedRow();
+            if (row < 0) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn phòng cần sửa!");
+                return;
+            }
+            // Lấy cột 0 là Số Phòng
+            String soPhong = model.getValueAt(row, 0).toString();
+
+            // Mở form với ID phòng cần sửa
+            new add_edit_room(soPhong, this::loadPhongFromDB).setVisible(true);
+        });
+
+        // 3. Xóa phòng
+        btnDelete.addActionListener(e -> {
+            int row = table.getSelectedRow();
+            if (row < 0) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn phòng cần xóa!");
+                return;
+            }
+            String soPhong = model.getValueAt(row, 0).toString();
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Bạn có chắc chắn muốn xóa phòng " + soPhong + "?\nHành động này không thể hoàn tác.",
+                    "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                try {
+                    phongService.deletePhong(soPhong);
+                    JOptionPane.showMessageDialog(this, "Xóa thành công!");
+                    loadPhongFromDB();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage());
+                }
+            }
+        });
+
+        // 4. Quản lý loại phòng
+        btnTypeMgmt.addActionListener(e -> {
+            new add_edit_room_typeroom().setVisible(true);
+            // Khi đóng quản lý loại phòng, cần reload lại filter loại phòng bên ngoài
+            loadFilterData();
+        });
+
+        // 5. Sự kiện Filter
+        ActionListener filterAction = e -> loadPhongFromDB();
+        cbxType.addActionListener(filterAction);
+        cbxStatus.addActionListener(filterAction);
     }
 
+    // [THÊM MỚI] Logic Load data kết hợp Filter
     private void loadPhongFromDB() {
-        model.setRowCount(0); // clear table
+        model.setRowCount(0);
 
-        for (PhongDto dto : phongService.getAllPhong()) {
+        // Lấy giá trị filter
+        String selectedStatus = (String) cbxStatus.getSelectedItem();
+
+        Object typeObj = cbxType.getSelectedItem();
+        String selectedTypeID = "Tất cả";
+        if (typeObj instanceof LoaiPhongDto) {
+            selectedTypeID = ((LoaiPhongDto) typeObj).getMaLoai();
+        }
+
+        // Gọi Service tìm kiếm
+        List<PhongDto> list = phongService.searchPhong(selectedTypeID, selectedStatus);
+
+        for (PhongDto dto : list) {
             model.addRow(new Object[]{
-                dto.getSoPhong(),
-                dto.getTenLoai(),
-                dto.getGiaPhong(),
-                dto.getTrangThai()
+                    dto.getSoPhong(),
+                    dto.getTenLoai(), // Hiển thị tên loại
+                    dto.getGiaPhong(), // Hiển thị giá
+                    dto.getTrangThai()
             });
         }
     }
-
 }

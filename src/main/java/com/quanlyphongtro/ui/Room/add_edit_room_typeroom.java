@@ -1,19 +1,30 @@
 package com.quanlyphongtro.ui.Room;
 
+import com.quanlyphongtro.config.SpringContext;
+import com.quanlyphongtro.dto.LoaiPhongDto;
+import com.quanlyphongtro.service.LoaiPhongService;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.math.BigDecimal;
+import java.util.List;
+
 
 public class add_edit_room_typeroom extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-
+    private final LoaiPhongService loaiPhongService;
+    private JTable table;
+    private DefaultTableModel model;
+    private JTextField txtMaLoai, txtTenLoai, txtGia;
 	/**
 	 * Launch the application.
 	 */
@@ -34,6 +45,7 @@ public class add_edit_room_typeroom extends JFrame {
 	 * Create the frame.
 	 */
 	public add_edit_room_typeroom() {
+        this.loaiPhongService = SpringContext.getBean(LoaiPhongService.class);
 		setTitle("ModifyTypeRoom");
         setSize(800, 450);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -43,8 +55,11 @@ public class add_edit_room_typeroom extends JFrame {
 
         // --- CỘT TRÁI: BẢNG DỮ LIỆU ---
         String[] cols = {"Mã Loại", "Tên Loại", "Giá"};
-        Object[][] data = {{"L1", "Phòng một người", "1,200,000"}, {"L2", "Phòng hai người", "1,500,000"}};
-        JTable table = new JTable(new DefaultTableModel(data, cols));
+        model = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+        table = new JTable(model);
         JScrollPane scroll = new JScrollPane(table);
         
         gbc.gridx = 0; gbc.gridy = 0;
@@ -59,14 +74,9 @@ public class add_edit_room_typeroom extends JFrame {
         add(rightPanel, gbc);
 
         // Các ô Input dùng TitledBorder
-        String[] labels = {"Mã Loại", "Tên loại", "Giá"};
-        for (int i = 0; i < 3; i++) {
-            JPanel p = new JPanel(new BorderLayout());
-            p.setBorder(new TitledBorder(labels[i]));
-            p.setBounds(10, 10 + (i * 70), 280, 55);
-            p.add(new JTextField());
-            rightPanel.add(p);
-        }
+        txtMaLoai = createInput(rightPanel, "Mã Loại", 10);
+        txtTenLoai = createInput(rightPanel, "Tên Loại", 80);
+        txtGia = createInput(rightPanel, "Giá", 150);
 
         // Nút bấm
         JButton btnLuu = new JButton("Lưu");
@@ -85,8 +95,77 @@ public class add_edit_room_typeroom extends JFrame {
         rightPanel.add(btnLuu);
         rightPanel.add(btnXoa);
         rightPanel.add(btnReset);
+
+        loadData();
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            int row = table.getSelectedRow();
+            if (row >= 0) {
+                txtMaLoai.setText(model.getValueAt(row, 0).toString());
+                txtTenLoai.setText(model.getValueAt(row, 1).toString());
+                txtGia.setText(model.getValueAt(row, 2).toString().replace(",", ""));
+                txtMaLoai.setEditable(false); // Không cho sửa mã khi update
+            }
+        });
+        // Sự kiện Lưu
+        btnLuu.addActionListener(e -> {
+            try {
+                LoaiPhongDto dto = new LoaiPhongDto();
+                dto.setMaLoai(txtMaLoai.getText());
+                dto.setTenLoai(txtTenLoai.getText());
+                dto.setGia(new BigDecimal(txtGia.getText()));
+
+                loaiPhongService.saveLoaiPhong(dto);
+                JOptionPane.showMessageDialog(this, "Lưu thành công!");
+                loadData();
+                resetForm();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage());
+            }
+        });
+        // Sự kiện Xóa
+        btnXoa.addActionListener(e -> {
+            String maLoai = txtMaLoai.getText();
+            if (maLoai.isEmpty()) return;
+
+            int confirm = JOptionPane.showConfirmDialog(this, "Xóa loại phòng này?");
+            if (confirm == JOptionPane.YES_OPTION) {
+                try {
+                    loaiPhongService.deleteLoaiPhong(maLoai);
+                    loadData();
+                    resetForm();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Không thể xóa (có thể đang được sử dụng).");
+                }
+            }
+        });
+
+        btnReset.addActionListener(e -> resetForm());
+    }
+    private JTextField createInput(JPanel panel, String title, int y) {
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBorder(new TitledBorder(title));
+        p.setBounds(10, y, 280, 55);
+        JTextField txt = new JTextField();
+        p.add(txt);
+        panel.add(p);
+        return txt;
+    }
+    private void loadData() {
+        model.setRowCount(0);
+        List<LoaiPhongDto> listLoai = loaiPhongService.getAllLoaiPhong();
+        for (LoaiPhongDto dto : listLoai) {
+            model.addRow(new Object[]{dto.getMaLoai(), dto.getTenLoai(), dto.getGia()});
+        }
+    }
+    private void resetForm() {
+        txtMaLoai.setText("");
+        txtMaLoai.setEditable(true);
+        txtTenLoai.setText("");
+        txtGia.setText("");
+        table.clearSelection();
+    }
     }
 
-	}
 
 

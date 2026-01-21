@@ -9,7 +9,7 @@ public class KhachThue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ma_khach")
-    private Long maKhach;
+    private Integer maKhach;
 
     @Column(name = "ho_ten", length = 100)
     private String hoTen;
@@ -31,11 +31,11 @@ public class KhachThue {
     @Column(length = 100)
     private String email;
 
-	public Long getMaKhach() {
+	public Integer getMaKhach() {
 		return maKhach;
 	}
 
-	public void setMaKhach(Long maKhach) {
+	public void setMaKhach(Integer maKhach) {
 		this.maKhach = maKhach;
 	}
 

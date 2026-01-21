@@ -8,13 +8,34 @@ public class PhongDto {
     private String tenLoai;
     private BigDecimal giaPhong;
     private String trangThai;
-
+	private String ghiChu;
+	private String maLoai;
     public PhongDto(String soPhong, String tenLoai, BigDecimal giaPhong, String trangThai) {
         this.soPhong = soPhong;
         this.tenLoai = tenLoai;
         this.giaPhong = giaPhong;
         this.trangThai = trangThai;
+
     }
+	public PhongDto() {
+
+	}
+
+	public String getMaLoai() {
+		return maLoai;
+	}
+
+	public void setMaLoai(String maLoai) {
+		this.maLoai = maLoai;
+	}
+
+	public String getGhiChu() {
+		return ghiChu;
+	}
+
+	public void setGhiChu(String ghiChu) {
+		this.ghiChu = ghiChu;
+	}
 
 	public String getSoPhong() {
 		return soPhong;

@@ -27,7 +27,7 @@ public class MainApplication {
         ConfigurableApplicationContext context = new SpringApplicationBuilder(MainApplication.class)
                 .headless(false) 
                 .run(args);
-
+        System.out.println(context.getEnvironment().getProperty("test.value"));
         EventQueue.invokeLater(() -> {
             try {
                 com.quanlyphongtro.ui.Home.home homeGui = context.getBean(com.quanlyphongtro.ui.Home.home.class);
