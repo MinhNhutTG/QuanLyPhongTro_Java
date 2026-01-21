@@ -11,6 +11,7 @@ public class panel_contract extends JPanel {
     private static final long serialVersionUID = 1L;
     private JTable table;
     private DefaultTableModel model;
+    private JButton btnAdd, btnUpdate, btnDelete, btnRefresh;
     private JComboBox<String> cbxStatusFilter;
     
     // Hệ thống màu sắc đồng bộ (Modern UI)
@@ -18,31 +19,30 @@ public class panel_contract extends JPanel {
     private final Color SUCCESS_COLOR = new Color(39, 174, 96);
     private final Color DANGER_COLOR = new Color(231, 76, 60);
     private final Color BACKGROUND_COLOR = new Color(240, 242, 245);
-    private final Color HEADER_BG = new Color(255, 255, 255);
     private final Font MAIN_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
     public panel_contract() {
-        // Cấu hình tổng thể
+        // Cấu hình tổng thể Panel chính
         setBackground(BACKGROUND_COLOR);
         setLayout(new BorderLayout(0, 0));
         setBorder(new EmptyBorder(25, 25, 25, 25));
 
-        // --- 1. HEADER TITLE & SEARCH ---
+        // --- 1. TIÊU ĐỀ VÀ BỘ LỌC (NORTH) ---
         add(createTopPanel(), BorderLayout.NORTH);
 
-        // --- 2. MAIN CONTENT AREA ---
+        // --- 2. VÙNG NỘI DUNG CHÍNH (CENTER) ---
         JPanel panelMain = new JPanel(new BorderLayout(0, 15));
         panelMain.setOpaque(false);
         panelMain.setBorder(new EmptyBorder(15, 0, 0, 0));
 
-        // Toolbar: Nút chức năng
+        // Thanh công cụ nút bấm (Phía trên của panelMain)
         panelMain.add(createToolbar(), BorderLayout.NORTH);
 
-        // Table: Danh sách hợp đồng
+        // Bảng danh sách hợp đồng (Trung tâm của panelMain - để tự giãn nở)
         panelMain.add(createTableSection(), BorderLayout.CENTER);
 
         add(panelMain, BorderLayout.CENTER);
-
+        setupEvent();
         loadDummyData();
     }
 
@@ -54,8 +54,7 @@ public class panel_contract extends JPanel {
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
         lblTitle.setForeground(new Color(33, 37, 41));
         
-        // Panel bên phải cho Filter
-        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         filterPanel.setOpaque(false);
         
         JLabel lblFilter = new JLabel("Trạng thái: ");
@@ -75,11 +74,18 @@ public class panel_contract extends JPanel {
     private JPanel createToolbar() {
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         toolbar.setOpaque(false);
+        
+   
+        btnAdd = createStyledButton(" Thêm mới ", SUCCESS_COLOR, Color.WHITE);
+        btnUpdate = createStyledButton(" Sửa hợp đồng ", PRIMARY_COLOR, new Color(50, 50, 50));
+        btnDelete = createStyledButton(" Xóa hợp đồng ", DANGER_COLOR, Color.WHITE);
+        btnRefresh = createStyledButton(" Làm mới ", new Color(108, 117, 125), Color.WHITE);
 
-        toolbar.add(createStyledButton(" + Thêm hợp đồng", SUCCESS_COLOR, Color.WHITE));
-        toolbar.add(createStyledButton(" Sửa hợp đồng", PRIMARY_COLOR, Color.WHITE));
-        toolbar.add(createStyledButton(" Xóa", DANGER_COLOR, Color.WHITE));
-        toolbar.add(createStyledButton(" Làm mới", new Color(108, 117, 125), Color.WHITE));
+        toolbar.add(btnAdd);
+        toolbar.add(btnUpdate);
+        toolbar.add(btnDelete);
+        toolbar.add(btnRefresh);
+
 
         return toolbar;
     }
@@ -92,7 +98,7 @@ public class panel_contract extends JPanel {
         model = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return false; // Không cho phép chỉnh sửa trực tiếp trên ô
             }
         };
 
@@ -114,6 +120,7 @@ public class panel_contract extends JPanel {
         table.setShowGrid(false);
         table.setIntercellSpacing(new Dimension(0, 0));
 
+        // Tùy chỉnh Header của bảng
         JTableHeader header = table.getTableHeader();
         header.setBackground(Color.WHITE);
         header.setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -131,6 +138,7 @@ public class panel_contract extends JPanel {
         btn.setBorder(new EmptyBorder(10, 15, 10, 15));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
+        // Hiệu ứng Hover
         btn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -143,6 +151,14 @@ public class panel_contract extends JPanel {
         });
 
         return btn;
+    }
+    private void setupEvent() {
+    	btnAdd.addActionListener(e -> {
+    		new add_edit_contract().setVisible(true);
+    	});
+    	btnUpdate.addActionListener(e->{
+    		new add_edit_contract().setVisible(true);
+    	});
     }
 
     private void loadDummyData() {

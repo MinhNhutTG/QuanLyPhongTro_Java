@@ -13,6 +13,10 @@ public class panel_guest extends JPanel {
     private JTable tableGuests, tableContracts;
     private DefaultTableModel modelGuests, modelContracts;
     private JComboBox<String> cbxStatusFilter, cbxStatusDetail;
+    private JButton btnAdd;
+    private JButton btnUpdate;
+    private JButton btnDelete;
+    private JButton btnRefresh;
     private JSpinner spinnerDOB;
     
     // Hệ thống màu sắc hiện đại
@@ -24,7 +28,7 @@ public class panel_guest extends JPanel {
     private final Color CARD_COLOR = Color.WHITE;
     private final Font MAIN_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
-    public panel_guest() {
+     public panel_guest() {
         setBackground(BACKGROUND_COLOR);
         setLayout(new BorderLayout(20, 20));
         setBorder(new EmptyBorder(25, 25, 25, 25));
@@ -85,10 +89,16 @@ public class panel_guest extends JPanel {
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         actions.setOpaque(false);
         
-        actions.add(createStyledButton(" + Thêm mới ", SUCCESS_COLOR, Color.WHITE));
-        actions.add(createStyledButton(" Cập nhật ", WARNING_COLOR, new Color(50, 50, 50)));
-        actions.add(createStyledButton(" Xóa khách ", DANGER_COLOR, Color.WHITE));
-        actions.add(createStyledButton(" Làm mới ", new Color(108, 117, 125), Color.WHITE));
+        btnAdd = createStyledButton("Thêm mới ", SUCCESS_COLOR, Color.WHITE);
+        btnUpdate = createStyledButton(" Cập nhật ", WARNING_COLOR, new Color(50, 50, 50));
+        btnDelete = createStyledButton(" Xóa khách ", DANGER_COLOR, Color.WHITE);
+        btnRefresh = createStyledButton(" Làm mới ", new Color(108, 117, 125), Color.WHITE);
+
+        actions.add(btnAdd);
+        actions.add(btnUpdate);
+        actions.add(btnDelete);
+        actions.add(btnRefresh);
+
 
         // Bảng
         String[] columns = {"ID", "Họ tên", "CCCD", "SĐT", "Trạng thái"};
@@ -236,7 +246,11 @@ public class panel_guest extends JPanel {
                     txtIDCard.setText(modelGuests.getValueAt(row, 2).toString());
                     txtPhone.setText(modelGuests.getValueAt(row, 3).toString());
                 }
-            }
+            } 
+        });
+        
+        btnAdd.addActionListener(e -> {
+        	 
         });
     }
 }

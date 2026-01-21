@@ -19,6 +19,11 @@ public class panel_room extends JPanel {
     private final Color PURPLE_COLOR = new Color(155, 89, 182);   // Purple
     private final Color BACKGROUND_COLOR = new Color(240, 242, 245);
     private final Font MAIN_FONT = new Font("Segoe UI", Font.PLAIN, 14);
+    
+    private JButton btnAdd;
+    private JButton btnUpdate;
+    private JButton btnDelete;
+    private JButton btnTypeMgmt;
 
     public panel_room() {
         // Cấu hình tổng thể
@@ -41,7 +46,7 @@ public class panel_room extends JPanel {
         panelMain.add(createTableSection(), BorderLayout.CENTER);
 
         add(panelMain, BorderLayout.CENTER);
-
+        setupEvent();
         loadDummyData();
     }
 
@@ -78,20 +83,16 @@ public class panel_room extends JPanel {
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         toolbar.setOpaque(false);
 
-        JButton btnAdd = createStyledButton(" + Thêm phòng ", SUCCESS_COLOR, Color.WHITE);
-        JButton btnEdit = createStyledButton(" Sửa phòng ", PRIMARY_COLOR, Color.WHITE);
-        JButton btnDelete = createStyledButton(" Xóa phòng ", DANGER_COLOR, Color.WHITE);
-        JButton btnTypeMgmt = createStyledButton(" Quản lý loại phòng ", PURPLE_COLOR, Color.WHITE);
+        btnAdd = createStyledButton(" Thêm mới ", SUCCESS_COLOR, Color.WHITE);
+        btnUpdate = createStyledButton(" Cập nhật ", PRIMARY_COLOR, new Color(50, 50, 50));
+        btnDelete = createStyledButton(" Xóa khách ", DANGER_COLOR, Color.WHITE);
+        btnTypeMgmt = createStyledButton("  Quản lý loại phòng ", new Color(108, 117, 125), Color.WHITE);
 
         toolbar.add(btnAdd);
-        toolbar.add(btnEdit);
+        toolbar.add(btnUpdate);
         toolbar.add(btnDelete);
         toolbar.add(btnTypeMgmt);
 
-        // Event cho nút Loại phòng
-        btnTypeMgmt.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Mở cửa sổ Quản lý loại phòng", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        });
 
         return toolbar;
     }
@@ -158,6 +159,17 @@ public class panel_room extends JPanel {
         });
 
         return btn;
+    }
+    private void setupEvent() {
+    	btnAdd.addActionListener(e -> {
+            new add_edit_room().setVisible(true);
+        });
+    	btnUpdate.addActionListener(e -> {
+    		new add_edit_room().setVisible(true);
+    	});
+    	btnTypeMgmt.addActionListener(e->{
+    		new add_edit_room_typeroom().setVisible(true);
+    	});
     }
 
     private void loadDummyData() {
