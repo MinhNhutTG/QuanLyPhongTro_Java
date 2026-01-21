@@ -1,4 +1,4 @@
-package com.quanlyphongtro.service.PhongServiceImpl;
+package com.quanlyphongtro.service.ServiceImpl;
 
 import com.quanlyphongtro.dto.PhongDto;
 import com.quanlyphongtro.repository.PhongRepository;

@@ -10,7 +10,7 @@ public class DichVuPhong {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "so_phong", nullable = false)
@@ -34,11 +34,11 @@ public class DichVuPhong {
     @Column(length = 100)
     private String trangThai;
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
